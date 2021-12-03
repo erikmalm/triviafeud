@@ -1,0 +1,61 @@
+.invite {
+    border:2px solid #fff;
+    border-radius: 4px;
+    display: grid;
+    grid-template-columns: 5fr 2fr;
+}
+
+.invite input, .invite button {
+    background: none;
+    border: none;
+    color: #fff;
+    padding:0 5px;
+    height:49px;
+    font-size: 16px;
+    position: relative;
+}
+
+.invite button::after {
+    content: '';
+    position: absolute;
+    left:-1px;
+    width:2px;
+    height:60%;
+    background-color: #fff;
+    top:50%;
+    transform: translateY(-50%);
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: 5fr 2fr;
+    margin-top:10px;
+    gap:10px;
+}
+
+.buttons button {
+    padding:15px 0;
+    font-weight: bold;
+    background: none;
+    border: none;
+    border-radius: 4px;
+}
+
+.buttons button:disabled {
+    opacity: .7;
+}
+
+.buttons button.primary {
+    background-color: var(--green);
+}
+
+.buttons button.secondary {
+    border: 2px solid var(--pink);
+    color: var(--pink);
+}
+
+.buttons button.secondary.start {
+    border-color: var(--green);
+    color: var(--green);
+    grid-column: 1 / -1;
+}

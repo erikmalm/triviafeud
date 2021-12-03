@@ -1,0 +1,77 @@
+.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.top h2 {
+    margin:0;
+}
+
+.emojiPicker {
+    position: absolute;
+    top:100%;
+    right:0;
+}
+
+.lobbyParticipants {
+    display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap:10px;
+    margin-top:40px;
+}
+
+.lobbyParticipants > div {
+    position: relative;
+    display: grid;
+    min-height: 24px;
+    grid-template-columns: 24px 1fr;
+    text-align: left;
+    align-items: center;
+    gap:5px;
+}
+
+.lobbyParticipants > div.kickable {
+    grid-template-columns: 24px 1fr 24px;
+}
+
+.kick {
+    cursor: pointer;
+}
+
+.lobbyParticipants p {
+    font-size: 12px;
+    grid-column: 2 / 3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    margin:0;
+}
+
+.speechBubble {
+	position: absolute;
+    left:30px;
+    bottom:110%;
+	font-size: 14px;
+	line-height: 20px;
+	width: 30px;
+	background: #fff;
+	border-radius: 40px;
+	padding: 2px;
+	text-align: center;
+	color: #000;
+}
+
+.speechBubble:before {
+	content: "";
+	width: 0px;
+	height: 0px;
+	position: absolute;
+	border-left: 12px solid #fff;
+	border-right: 6px solid transparent;
+	border-top: 3px solid #fff;
+	border-bottom: 10px solid transparent;
+	left:5px;
+	bottom: -8px;
+}

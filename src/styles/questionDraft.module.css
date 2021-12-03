@@ -1,0 +1,13 @@
+.options {
+	display: grid;
+	grid-auto-flow: row;
+	padding: 30px;
+	gap: 30px;
+}
+
+.options > div {
+	text-align: left;
+	padding: 10px;
+	border: 2px solid var(--green);
+	border-radius: 4px;
+}
