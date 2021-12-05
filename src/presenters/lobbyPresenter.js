@@ -17,6 +17,7 @@ import styles from "../styles/lobby.module.css"
 import { addGameWatchers } from "../redux/dbwatchers/gameWatcher"
 
 import { getCandidateQuestions, setDraftQuestions } from "../redux/reducers/questionDraftSlice"
+import { notifyWarning } from "../components/notification"
 
 export default function LobbyPresenter() {
 	const navigate = useNavigate()
@@ -29,7 +30,7 @@ export default function LobbyPresenter() {
 
 	useEffect(() => {
 		if (kickedState) {
-			alert("You have been kicked")
+			notifyWarning("You have been kicked")
 			removeServerWatchers()
 			exitToStartPage()
 		}

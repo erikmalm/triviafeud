@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 
-import { initializeGame, initializeQuestionDrafting } from "../../util/gameUtil"
+import { initializeGame, initializeQuestionDrafting, setNewAnswerForPlayer } from "../../util/gameUtil"
 import { setServerState, SERVER_STATES } from "../../util/serverUtil"
 
 const INITIAL_STATE = {
@@ -37,6 +37,23 @@ export const startQuestionDrafting = createAsyncThunk(
 	}
 )
 
+export const answerIsSelected = createAsyncThunk(
+	"answer/select",
+	async ({ serverId, playerId, correctAnswer }, { rejectWithValue }) => {
+		try {
+			// save answer to firebase
+			// await saveQuestionToFirebase(serverId, question)
+			// await updateGameState(serverId, GAME_STATES.question)
+			console.log(serverId)
+			console.log(playerId)
+			console.log(correctAnswer)
+			await setNewAnswerForPlayer(serverId, playerId, correctAnswer)
+		} catch (error) {
+			return rejectWithValue(error)
+		}
+	}
+)
+
 /*
 
 Defined in serverSlice
@@ -64,6 +81,9 @@ export const gameSlice = createSlice({
 		},
 		setNewQuestion: (state, { payload }) => {
 			state.currentQuestion.question = payload
+		},
+		setNewAnswer: (state, { payload }) => {
+			state.currentQuestion.answer = payload
 		},
 	},
 	extraReducers: builder => {

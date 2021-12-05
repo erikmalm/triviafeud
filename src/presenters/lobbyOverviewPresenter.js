@@ -42,13 +42,15 @@ export default function LobbyOverviewPresenter({ kick, serverState, playerState 
 	}
 
 	return (
-		<LobbyOverviewView
-			participants={serverState.players}
-			kickPlayer={kick}
-			player={playerState}
-			onEmojiSelect={(_, emojiObject) => handleEmojiClick(emojiObject.emoji)}
-			toggleEmojiPicker={() => setEmojiPicker(!emojiPicker)}
-			showEmojiPicker={emojiPicker}
-		/>
+		<>
+			<LobbyOverviewView
+				participants={serverState.players}
+				kickPlayer={kick}
+				player={playerState}
+				onEmojiSelect={(_, emojiObject) => handleEmojiClick(emojiObject.emoji)}
+				toggleEmojiPicker={() => setEmojiPicker(!emojiPicker)}
+				showEmojiPicker={emojiPicker}
+			/>
+		</>
 	)
 }

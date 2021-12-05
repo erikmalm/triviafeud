@@ -1,5 +1,6 @@
 import "./styles/App.css"
 import main from "./styles/main.module.css"
+import "react-toastify/dist/ReactToastify.css"
 
 import { useEffect, useState, useRef } from "react"
 
@@ -13,6 +14,8 @@ import QuestionPresenter from "./presenters/questionPresenter"
 import StartPagePresenter from "./presenters/startPagePresenter"
 import GamePresenter, { getContainerSize } from "./presenters/gamePresenter"
 import LobbySettingsPresenter from "./presenters/lobbySettingsPresenter"
+
+import { ToastContainer, toast } from "react-toastify"
 
 const allRoutes = [
 	{
@@ -64,6 +67,7 @@ function App() {
 	return (
 		<>
 			<h1 className={main.heading}>Trivia Feud</h1>
+			<ToastContainer autoClocse={2000} />
 			{currentRoute && (
 				<div ref={containerRef} className={`${main.container} ${currentRoute.container()}`}>
 					{shouldRender && (

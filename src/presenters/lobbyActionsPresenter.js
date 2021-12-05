@@ -5,6 +5,7 @@ import LobbyActionsView from "../views/lobbyActionsView"
 import { setReady } from "../redux/reducers/playerSlice"
 
 import { addGameWatchers, removeGameWatchers } from "../redux/dbwatchers/gameWatcher"
+import { notifySuccess, notifyWarning, notifyError } from "../components/notification"
 
 export default function LobbyActionsPresenter({ start, leave, playerState, serverState }) {
 	const dispatch = useDispatch()
@@ -29,8 +30,8 @@ export default function LobbyActionsPresenter({ start, leave, playerState, serve
 	function copyLink() {
 		navigator.clipboard
 			.writeText(window.location.href)
-			.then(() => alert("Copied the link"))
-			.catch(() => alert("Could not copy link"))
+			.then(() => notifySuccess("Copied the link"))
+			.catch(() => notifyError("Could not copy link"))
 	}
 
 	return (

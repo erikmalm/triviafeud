@@ -29,3 +29,18 @@ export async function initializeQuestionDrafting(serverId, { playerId }) {
 	await db.ref(`rooms/${serverId}/game/currentDrafter`).set(playerId)
 	await db.ref(`rooms/${serverId}/game/gameState`).set(GAME_STATES.questionDraft)
 }
+
+/**
+ * Stores the selected answer by the player in database under playerAnswer -> correctAnswer?
+ *
+ * @param {*} serverId The ID for the room that the participant is playing in.
+ * @param {*} playerId The ID for the player selecting an answer
+ * @param {boolean} correctAnswer If the selected answer is correct or not
+ */
+
+export async function setNewAnswerForPlayer(serverId, playerId, correctAnswer) {
+	// Do nothing
+	await db
+		.ref(`rooms/${serverId}/game/currentQuestion/question/playerAnswers/${playerId}/correctAnswer`)
+		.set(correctAnswer)
+}

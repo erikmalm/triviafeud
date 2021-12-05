@@ -3,7 +3,7 @@ import { API_STATES } from "../api"
 
 const answerWrongComments = ["Had a rough day?", "Getting there!", "You can do Better!", "Try again!", "Are you sure?"]
 
-export default function QuestionView({ question, handleAnswer }) {
+export default function QuestionView({ question, handleAnswer, currentTime }) {
 	return (
 		<div>
 			{question.question}

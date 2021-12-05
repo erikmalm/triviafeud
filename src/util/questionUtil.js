@@ -50,23 +50,17 @@ export function formatQuestion(question) {
 
 	decoded.correctAnswer = decoded.answers[0].id
 
-	/* Multiple choice should be shuffled
-    and booleans [True] [False] */
-	if (question.type === "multiple") decoded.answers = shuffle(decoded.answers)
+	/* Answers for multiple choice questions should be shuffled
+    and booleans should always be listed as: [True] [False] */
+	if (question.type === "multiple") decoded.answers = decoded.answers.sort(() => Math.random() - 0.5)
 	else if (question.type === "boolean")
 		decoded.answers = decoded.answers.sort(answer => (answer.text === "True" ? -1 : 1))
 
+    /* Delete unused object parts from API */
 	delete decoded.incorrect_answers
 	delete decoded.correct_answer
+
 	return decoded
-}
-
-// Function to shuffle a list
-// Found on the interwebz  ...wow!
-// https://flaviocopes.com/how-to-shuffle-array-javascript/
-
-function shuffle(list) {
-	return list.sort(() => Math.random() - 0.5)
 }
 
 /**
