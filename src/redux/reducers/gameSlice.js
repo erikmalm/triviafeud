@@ -1,7 +1,19 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 
-import { initializeGame, initializeQuestionDrafting, setNewAnswerForPlayer } from "../../util/gameUtil"
+import {
+	initializeGame,
+	initializeQuestionDrafting,
+	setNewAnswerForPlayer,
+	removeCurrentQuestionAndAnswers,
+	updateGameState,
+	updateNextRound
+} from "../../util/gameUtil"
+
 import { setServerState, SERVER_STATES } from "../../util/serverUtil"
+
+// For some reason I only manage to store this value in gameState -> playerAnswers
+// https://www.pluralsight.com/guides/deeply-nested-objectives-redux
+// To fix later...!
 
 const INITIAL_STATE = {
 	currentRound: null,
@@ -9,8 +21,10 @@ const INITIAL_STATE = {
 	currentDrafter: null,
 	currentQuestion: {
 		question: null,
-		answers: [],
 	},
+	playerAnswers: [],
+	gameTimer: null,
+    gameTimerStart: null
 }
 
 export const startGame = createAsyncThunk("game/start", async (serverId, { rejectWithValue }) => {
@@ -41,13 +55,37 @@ export const answerIsSelected = createAsyncThunk(
 	"answer/select",
 	async ({ serverId, playerId, correctAnswer }, { rejectWithValue }) => {
 		try {
-			// save answer to firebase
-			// await saveQuestionToFirebase(serverId, question)
-			// await updateGameState(serverId, GAME_STATES.question)
-			console.log(serverId)
-			console.log(playerId)
-			console.log(correctAnswer)
 			await setNewAnswerForPlayer(serverId, playerId, correctAnswer)
+		} catch (error) {
+			return rejectWithValue(error)
+		}
+	}
+)
+
+export const clearCurrentQuestion = createAsyncThunk("answer/clear", async ({ serverId }, { rejectWithValue }) => {
+	try {
+		await removeCurrentQuestionAndAnswers(serverId)
+	} catch (error) {
+		return rejectWithValue(error)
+	}
+})
+
+export const setGlobalGameState = createAsyncThunk(
+	"gameState/set",
+	async ({ serverId, gameState }, { rejectWithValue }) => {
+		try {
+			await updateGameState(serverId, gameState)
+		} catch (error) {
+			return rejectWithValue(error)
+		}
+	}
+)
+
+export const setNextRound = createAsyncThunk(
+	"game/nextRound",
+	async ({ serverId, currentRound }, {rejectWithValue}) => {
+		try {
+			await updateNextRound(serverId, currentRound + 1)
 		} catch (error) {
 			return rejectWithValue(error)
 		}
@@ -79,11 +117,19 @@ export const gameSlice = createSlice({
 		setCurrentQuestion: (state, { payload }) => {
 			state.currentQuestion = payload
 		},
+		setGameTimer: (state, { payload }) => {
+			state.gameTimer = payload
+            state.gameTimerStart = new Date(payload) - Date.now()
+		},
 		setNewQuestion: (state, { payload }) => {
 			state.currentQuestion.question = payload
 		},
-		setNewAnswer: (state, { payload }) => {
-			state.currentQuestion.answer = payload
+		setPlayerAnswers: (state, { payload }) => {
+			state.playerAnswers = payload
+		},
+		resetCurrentQuestion: state => {
+			state.currentQuestion = null
+			state.playerAnswers = []
 		},
 	},
 	extraReducers: builder => {
@@ -109,6 +155,14 @@ export const gameSlice = createSlice({
 	},
 })
 
-export const { setCurrentRound, setGameState, setCurrentDrafter, setNewQuestion } = gameSlice.actions
+export const {
+	setCurrentRound,
+	setGameState,
+	setCurrentDrafter,
+    setGameTimer,
+	setNewQuestion,
+	setPlayerAnswers,
+	resetCurrentQuestion,
+} = gameSlice.actions
 
 export default gameSlice.reducer

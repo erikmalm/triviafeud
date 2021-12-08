@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 import { resetPlayer } from "../redux/reducers/playerSlice"
 import { kickPlayer, resetServer } from "../redux/reducers/serverSlice"
@@ -14,9 +14,8 @@ import LobbyOverviewPresenter from "./lobbyOverviewPresenter"
 import { removeServerWatchers } from "../redux/dbwatchers/serverWatcher"
 
 import styles from "../styles/lobby.module.css"
-import { addGameWatchers } from "../redux/dbwatchers/gameWatcher"
+import { removeGameWatchers } from "../redux/dbwatchers/gameWatcher"
 
-import { getCandidateQuestions, setDraftQuestions } from "../redux/reducers/questionDraftSlice"
 import { notifyWarning } from "../components/notification"
 
 export default function LobbyPresenter() {
@@ -25,6 +24,8 @@ export default function LobbyPresenter() {
 
 	const serverState = useSelector(state => state.server)
 	const playerState = useSelector(state => state.player)
+
+	const [showSettings, setShowSettings] = useState(false)
 
 	const kickedState = useSelector(state => state.player.kicked)
 
@@ -48,9 +49,14 @@ export default function LobbyPresenter() {
 	}
 
 	function exitToStartPage() {
+        if(playerState.isReady) removeGameWatchers()
 		dispatch(resetServer())
 		dispatch(resetPlayer())
 		navigate("/")
+	}
+
+	function triggerSettings() {
+		setShowSettings(!showSettings)
 	}
 
 	async function handleStartGame() {
@@ -59,10 +65,8 @@ export default function LobbyPresenter() {
 		// Start game
 		await dispatch(startGame(serverState.id))
 
-		await new Promise(resolve => setTimeout(resolve, 1000))
-
 		// Draft question
-		const { payload: draftingPlayer } = await dispatch(
+		await dispatch(
 			startQuestionDrafting({
 				serverId: serverState.id,
 				players: serverState.players,
@@ -72,14 +76,14 @@ export default function LobbyPresenter() {
 
 	return (
 		<div className={styles.parent}>
-			<LobbyOverviewPresenter kick={handleKick} serverState={serverState} playerState={playerState} />
+			<LobbyOverviewPresenter kick={handleKick} serverState={serverState} playerState={playerState} showSettings={triggerSettings}/>
 			<LobbyActionsPresenter
 				start={handleStartGame}
 				leave={handleLeaveLobby}
 				serverState={serverState}
 				playerState={playerState}
 			/>
-			<LobbySettingsPresenter />
+			{showSettings && <LobbySettingsPresenter showSettings={triggerSettings}/>} 
 		</div>
 	)
 }

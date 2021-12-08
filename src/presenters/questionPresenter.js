@@ -1,9 +1,12 @@
-// Import from react-redux
+// React-Redux, reducers and util
+import { useState, useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
-import { answerIsSelected } from "../redux/reducers/gameSlice"
+import { answerIsSelected, setGameState } from "../redux/reducers/gameSlice"
+import { GAME_STATES } from "../util/gameUtil"
 
 // View
 import QuestionView from "../views/questionView"
+
 
 // Default function
 export default function QuestionPresenter() {
@@ -11,60 +14,60 @@ export default function QuestionPresenter() {
 	const serverState = useSelector(state => state.server)
 	const playerState = useSelector(state => state.player)
 
-	const today = new Date()
+    const [timerState, setTimerState] = useState(null)
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const msLeft = new Date(gameState.gameTimer) - Date.now()
+            setTimerState(Math.max(msLeft / 1000, 0))
+        }, 100)
+        return () => clearInterval(interval)
+    }, [gameState.gameTimer])
+
+	// This keeps track of changes to states in the store
+	const questionState = useSelector(state => state.game.currentQuestion.question)
 
 	const dispatch = useDispatch()
 
 	// The correct answer is found in the game state
 	let correctAnswer = gameState.currentQuestion.question.correctAnswer
 
-	let currentTime = getTime()
+	// let currentTime = getTime()
 
-	let startTime = new Date()
+	// let startTime = new Date()
 
 	// We can dispatch the answer compared to the correct answer
-	function handleAnswer(answer) {
+	async function handleAnswer(answer) {
 		if (!answer) return
+
+		// should change game state
+		dispatch(setGameState(GAME_STATES.waiting))
 
 		let checkAnswer = answer === correctAnswer // if correct returns true, else false
 
 		// dispatch useranswer with status on correct server for the current player
-		dispatch(
+		await dispatch(
 			answerIsSelected({
 				serverId: serverState.id,
 				playerId: playerState.playerId,
 				correctAnswer: checkAnswer,
+				// TODO: ADD TIME/SCORE CALCULATION
 			})
 		)
-
-		let answerTime = new Date()
-
-		console.log(answerTime - startTime)
+      
+        // Wait for the other players
+        dispatch(setGameState(GAME_STATES.waitingForPlayers))
 	}
 
-	function getTime() {
-		let hours,
-			minutes,
-			seconds = ""
-
-		if (today.getHours() < 10) hours = "0" + today.getHours()
-		else hours = today.getHours()
-
-		if (today.getMinutes() < 10) minutes = "0" + today.getMinutes()
-		else minutes = today.getMinutes()
-
-		if (today.getSeconds() < 10) seconds = "0" + today.getSeconds()
-		else seconds = today.getSeconds()
-
-		return hours + ":" + minutes + ":" + seconds
+	function randomAnswer(answers) {
+		handleAnswer(answers[Math.floor(Math.random() * answers.length)].id)
 	}
 
-	// This keeps track of changes to states in the store
-	const questionState = useSelector(state => state.game.currentQuestion.question)
+
 
 	return (
 		<div>
-			<QuestionView question={questionState} handleAnswer={handleAnswer} currentTime={currentTime} />
+			<QuestionView question={questionState} timer={timerState} timerStart={gameState.gameTimerStart / 1000} handleAnswer={handleAnswer} randomAnswer={randomAnswer} />
 		</div>
 	)
 }

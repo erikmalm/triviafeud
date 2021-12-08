@@ -7,7 +7,7 @@ import { API_STATES } from "../../api"
 import { GAME_STATES, updateGameState } from "../../util/gameUtil"
 
 // util
-import { formatQuestion, saveQuestionToFirebase } from "../../util/questionUtil"
+import { formatQuestion, saveQuestionToFirebase, resetCurrentDrafter } from "../../util/questionUtil"
 
 export const getCandidateQuestions = createAsyncThunk("questionDraft/get", async (_, { rejectWithValue }) => {
 	try {
@@ -20,12 +20,13 @@ export const getCandidateQuestions = createAsyncThunk("questionDraft/get", async
 })
 
 export const questionIsSelected = createAsyncThunk(
-	"questionDraft/get",
+	"questionDraft/select",
 	async ({ serverId, question }, { rejectWithValue }) => {
 		try {
 			// save question to firebase
 			await saveQuestionToFirebase(serverId, question)
 			await updateGameState(serverId, GAME_STATES.question)
+            await resetCurrentDrafter(serverId)
 		} catch (error) {
 			return rejectWithValue(error)
 		}
@@ -62,6 +63,7 @@ export const questionDraftSlice = createSlice({
 				alert(action.payload)
 				state.status = API_STATES.ERROR
 			})
+            .addCase(questionIsSelected.pending, state => {state.status = null})
 	},
 })
 

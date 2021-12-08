@@ -1,17 +1,22 @@
+// CSS
+import { full, big, small } from "../styles/main.module.css"
+
+// Redux, store & util
+import store from "../redux/store.js"
+import { SERVER_STATES } from "../util/serverUtil"
+import { GAME_STATES } from "../util/gameUtil"
+import { useSelector } from "react-redux"
+
+// Presenters
+import QuestionPresenter from "./questionPresenter"
+import WaitingForPlayersPresenter from "./waitingForPlayersPresenter"
 import LobbyPresenter from "./lobbyPresenter"
 import QuickJoinPresenter from "./quickJoinPresenter"
 import QuestionDraftPresenter from "./questionDraftPresenter"
+import RoundResultsPresenter from "./roundResultsPresenter"
 
+// Consider importing Presenter instead
 import WaitingView from "../views/waitingView"
-
-import { SERVER_STATES } from "../util/serverUtil"
-import { GAME_STATES } from "../util/gameUtil"
-
-import { useSelector } from "react-redux"
-
-import store from "../redux/store.js"
-import { full, big, small } from "../styles/main.module.css"
-import QuestionPresenter from "./questionPresenter"
 
 export default function GamePresenter() {
 	const serverState = useSelector(state => state.server.state)
@@ -30,6 +35,10 @@ export default function GamePresenter() {
 			return <QuestionDraftPresenter />
 		case GAME_STATES.waiting:
 			return <WaitingView />
+		case GAME_STATES.waitingForPlayers:
+			return <WaitingForPlayersPresenter />
+		case GAME_STATES.roundResults:
+			return <RoundResultsPresenter />
 		case GAME_STATES.question:
 			return <QuestionPresenter />
 		default:
@@ -42,7 +51,7 @@ containers[GAME_STATES.waiting] = small
 containers[GAME_STATES.questionDraft] = big
 containers[GAME_STATES.question] = big
 containers[GAME_STATES.questionWaiting] = small
-containers[GAME_STATES.questionResult] = big
+containers[GAME_STATES.roundResults] = big
 containers[GAME_STATES.gameResult] = full
 
 export function getContainerSize() {
@@ -66,7 +75,7 @@ room ->
         currentRound: N
         currentQuestion: {
             question: question obj
-            answers: [
+            playerAnswers: [
                 {
                     playerId: ""
                     correct: bool,

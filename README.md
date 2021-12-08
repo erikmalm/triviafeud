@@ -237,7 +237,7 @@ Contains the actual rendering elements for the projects.
 * CLONE REPOSITORY
 * NPM INSTALL
 * CONFIG FIREBASE
-* CONFIG HEROKU
+* CONFIG HEROKU (If remote access is wanted)
 * NPM START
 * HAVE FUN
 

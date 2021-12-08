@@ -5,12 +5,16 @@ export const GAME_STATES = Object.freeze({
 	questionDraft: "QUESTION DRAFT",
 	questionWaiting: "QUESTION WAITING",
 	question: "QUESTION",
-	questionResult: "QUESTION RESULT",
+	roundResults: "ROUND RESULTS",
 	gameResult: "GAME RESULT",
 })
 
 export async function updateGameState(serverId, gameState) {
 	await db.ref(`rooms/${serverId}/game/gameState`).set(gameState)
+}
+
+export async function updateNextRound(serverId, nextRound) {
+	await db.ref(`rooms/${serverId}/game/currentRound`).set(nextRound)
 }
 
 export async function initializeGame(serverId) {
@@ -39,8 +43,15 @@ export async function initializeQuestionDrafting(serverId, { playerId }) {
  */
 
 export async function setNewAnswerForPlayer(serverId, playerId, correctAnswer) {
-	// Do nothing
-	await db
-		.ref(`rooms/${serverId}/game/currentQuestion/question/playerAnswers/${playerId}/correctAnswer`)
-		.set(correctAnswer)
+	await db.ref(`rooms/${serverId}/game/currentQuestion/playerAnswers/${playerId}`).set({
+        playerId,
+        correctAnswer,
+        answeredRandomly: false,
+        addedScore: 10,
+    })
+}
+
+// Helper util to clear current question in firebase
+export async function removeCurrentQuestionAndAnswers(serverId) {
+	await db.ref(`rooms/${serverId}/game/currentQuestion`).remove()
 }

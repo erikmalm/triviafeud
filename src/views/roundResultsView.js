@@ -1,18 +1,32 @@
-export default function RoundResultsView({ participants }) {
+import styles from '../styles/roundResults.module.css'
+
+export default function RoundResultsView({ players, timer, answeredRight }) {
 	return (
-		<div className="roundResWrapper">
-			<h1> Trivia Feud </h1>
-			<div className="roundResParticipants">
-				{participants.map(p => (
-					<p className={`lobbyParticipant + ${participants.recScor}`} key={p}>
-						p
-					</p>
-				))}
-			</div>
-			<div className="roundResButtons"></div>
-			<div className="roundResHelp">
-				<button onClick={() => lobbyHelp()}>?</button>
-			</div>
+		<div className={styles.main}>
+            <div className={styles.top}>
+                <h2 className={styles.heading}>Results</h2>
+                <div className={styles.playerResult}>
+                    <span>Your answer was</span>
+                    {answeredRight ?
+                        <div className={styles.correct}>Correct</div>
+                        :
+                        <div className={styles.inCorrect}>Incorrect</div>
+                    }
+                </div>
+                <div className={styles.players}>{players.map((player, index) => 
+                    <div key={player.playerName} className={styles.player}>
+                        <p>{index + 1}. {player.playerName}</p>
+                        <div>
+                            <p>{player.score}</p>
+                            <span>{player.addedScore > 0 ? `+${player.addedScore}` : ''}</span>
+                        </div>
+                    </div>
+                )}</div>
+            </div>
+            <div className={styles.continue}>
+                <h3>Starting next round in</h3>
+                <div>{timer}</div>
+            </div>
 		</div>
 	)
 }

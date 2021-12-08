@@ -69,7 +69,7 @@ function App() {
 			<h1 className={main.heading}>Trivia Feud</h1>
 			<ToastContainer autoClocse={2000} />
 			{currentRoute && (
-				<div ref={containerRef} className={`${main.container} ${currentRoute.container()}`}>
+				<div ref={containerRef} className={`${main.container} ${containerSize}`}>
 					{shouldRender && (
 						<Routes>
 							<Route path={currentRoute.path} element={<currentRoute.element />} />

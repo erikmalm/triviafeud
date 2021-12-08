@@ -5,7 +5,7 @@ import LobbyOverviewView from "../views/lobbyOverviewView"
 import { setEmoji } from "../redux/reducers/playerSlice"
 import { useState, useRef } from "react"
 
-export default function LobbyOverviewPresenter({ kick, serverState, playerState }) {
+export default function LobbyOverviewPresenter({ kick, serverState, playerState, showSettings }) {
 	const dispatch = useDispatch()
 
 	const [emojiPicker, setEmojiPicker] = useState()
@@ -41,6 +41,10 @@ export default function LobbyOverviewPresenter({ kick, serverState, playerState 
 		)
 	}
 
+
+
+
+
 	return (
 		<>
 			<LobbyOverviewView
@@ -50,6 +54,7 @@ export default function LobbyOverviewPresenter({ kick, serverState, playerState 
 				onEmojiSelect={(_, emojiObject) => handleEmojiClick(emojiObject.emoji)}
 				toggleEmojiPicker={() => setEmojiPicker(!emojiPicker)}
 				showEmojiPicker={emojiPicker}
+				toggleSettings={showSettings}
 			/>
 		</>
 	)

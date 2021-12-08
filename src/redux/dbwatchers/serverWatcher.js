@@ -4,7 +4,7 @@ import { setPlayers, setState } from "../reducers/serverSlice"
 
 import { setKicked } from "../reducers/playerSlice"
 
-import { decodePlayers } from "../../util/serverUtil"
+import { decodeFirebaseArray } from "../../util/serverUtil"
 
 import store from "../store"
 
@@ -16,18 +16,20 @@ export function addServerWatchers() {
 	addPlayersWatcher()
 	addStateWatcher()
 	addKickedWatcher()
+	//addSettingsWatcher()
 }
 
 export function removeServerWatchers() {
 	removePlayersWatcher()
 	removeStateWatcher()
 	removeKickedWatcher()
+	//removeSettingsWatcher()
 }
 
 function playersWatcher(snapshot) {
     const vals = snapshot.val()
 	if (vals === null) return
-	store.dispatch(setPlayers(decodePlayers(vals)))
+	store.dispatch(setPlayers(decodeFirebaseArray(vals)))
 }
 
 /**
@@ -47,6 +49,37 @@ export function removePlayersWatcher() {
     const serverId = store.getState().server.id
     db.ref(`rooms/${serverId}/players`).off("value", playersWatcher)
 }
+
+
+
+
+
+
+function settingsWatcher(snapshot) {
+	const val = snapshot.val()
+	if (val === null) return
+	store.dispatch(setState(val))
+}
+
+function addSettingsWatcher() {
+	const serverId = store.getState().server.id
+	db.ref(`rooms/${serverId}/settings`).on("value", settingsWatcher)
+}
+
+function removeSettingsWatcher() {
+	const serverId = store.getState().server.id
+	db.ref(`rooms/${serverId}/settings`).off("value", settingsWatcher)
+}
+
+
+
+
+
+
+
+
+
+
 
 function stateWatcher(snapshot) {
 	const val = snapshot.val()

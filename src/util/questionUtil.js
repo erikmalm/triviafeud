@@ -81,3 +81,8 @@ function decodeQuestion(question) {
 export async function saveQuestionToFirebase(serverId, question) {
 	await db.ref(`rooms/${serverId}/game/currentQuestion/question`).set(question)
 }
+
+export async function resetCurrentDrafter(serverId) {
+	await db.ref(`rooms/${serverId}/game/currentDrafter`).set(null)
+}
+

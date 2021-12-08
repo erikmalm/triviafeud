@@ -1,6 +1,6 @@
 // Emoji
 import Picker from "emoji-picker-react"
-import {AddReactionIcon} from "../icons/"
+import { AddReactionIcon } from "../icons/"
 
 export default function LobbyView({
 	participants,
@@ -12,7 +12,7 @@ export default function LobbyView({
 	onEmojiSelect,
 	showEmojiPicker,
 	toggleEmojiPicker,
-	copyInviteLink
+	copyInviteLink,
 }) {
 	return (
 		<div className="lobbyWrapper">
@@ -41,11 +41,7 @@ export default function LobbyView({
 				<button onClick={() => leaveLobby()}>EXIT</button>
 			</div>
 
-			<div>
-				{showEmojiPicker && (
-				<Picker onEmojiClick={onEmojiSelect} />
-				)}
-			</div>
+			<div>{showEmojiPicker && <Picker onEmojiClick={onEmojiSelect} />}</div>
 			<div onClick={() => toggleEmojiPicker()}>
 				<AddReactionIcon />
 			</div>

@@ -37,15 +37,6 @@ export const CATEGORIES = [
 	{ id: 32, name: "Entertainment: Cartoon & Animations" },
 ]
 
-// Settings to be set when a room is created
-export const DEFAULT_SETTINGS = {
-	nrOfRound: 24,
-	category: null,
-	gamemode: "standard",
-	difficulty: "medium",
-	speed: "standard",
-}
-
 export const PLAYER_TEMPLATE = {
 	role: "player",
 	score: 0,
@@ -53,6 +44,15 @@ export const PLAYER_TEMPLATE = {
 	emoji: null,
 	playerId: null,
 	playerName: null,
+}
+
+// Settings to be set when a room is created
+export const DEFAULT_SETTINGS = {
+	nrOfRound: 12,
+	category: null,
+	gamemode: "standard",
+	difficulty: "medium",
+	speed: "standard",
 }
 
 // Creates a new room
@@ -101,12 +101,14 @@ export async function setServerState(serverId, state) {
 /**
  * Deodes the object players in a server
  * and returns an array of the players
- * @param {*} players object in server
+ * @param {*} array object in server
  */
 
-export function decodePlayers(players) {
-	return Object.entries(players).map(entry => entry[1])
+export function decodeFirebaseArray(array) {
+	return Object.entries(array).map(entry => entry[1])
 }
+
+
 
 /**
  *

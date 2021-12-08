@@ -1,11 +1,9 @@
-import { SpinnerIcon } from "../icons"
-import { API_STATES } from "../api"
+import GameTimer from "../components/gameTimer"
 
-const answerWrongComments = ["Had a rough day?", "Getting there!", "You can do Better!", "Try again!", "Are you sure?"]
-
-export default function QuestionView({ question, handleAnswer, currentTime }) {
+export default function QuestionView({ question, timer, timerStart, handleAnswer, randomAnswer }) {
 	return (
 		<div>
+            <GameTimer time={timer} startTime={timerStart} />
 			{question.question}
 			<div className="answersGrid">
 				{question.answers.map(option => (
@@ -13,6 +11,9 @@ export default function QuestionView({ question, handleAnswer, currentTime }) {
 						{option.text}
 					</div>
 				))}
+			</div>
+			<div className="randomAnswer" onClick={() => randomAnswer(question.answers)}> {/*  */}
+				Answer Randomly
 			</div>
 		</div>
 	)

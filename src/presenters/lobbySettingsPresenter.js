@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { DEFAULT_SETTINGS } from "../util/serverUtil"
 import { updateSettings } from "../redux/reducers/serverSlice"
 
-export default function lobbySettingsPresenter() {
+export default function LobbySettingsPresenter({showSettings}) {
 /*
     const dispatch = useDispatch
     //const navigate = useNavigate
@@ -36,13 +36,14 @@ export default function lobbySettingsPresenter() {
         )
     }
 */
-    return null;
+
     return (
-        <LobbySettingsView
-        categoryList={[]}
+        <LobbySettingsView toggleSettings={showSettings}
+
+        /*categoryList={[]}
         closeSettings={"closeSettings"}
         applySettings={"applySettings"}
-        defaultSettings={"defaultSettings"}
+        defaultSettings={"defaultSettings"} */
         />
     )
 
