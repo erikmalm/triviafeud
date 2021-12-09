@@ -1,78 +1,54 @@
-import LobbySettingsView from "../views/lobbySettingsView"
+import { LobbySettingsShow, LobbySettingsEdit} from "../views/lobbySettingsView"
 import { useSelector, useDispatch } from "react-redux"
-//import { useNavigate } from "react-router";
-import { DEFAULT_SETTINGS } from "../util/serverUtil"
-import { updateSettings } from "../redux/reducers/serverSlice"
+import { updateSetting, resetSettings } from "../redux/reducers/settingsSlice"
+import { settings as renderSettings } from "../util/settingsUtil"
+import { INITIAL_STATE } from "../redux/reducers/settingsSlice"
 
-export default function LobbySettingsPresenter({showSettings}) {
-/*
-    const dispatch = useDispatch
-    //const navigate = useNavigate
+export default function LobbySettingsPresenter({ showSettings, setShowSettings }) {
 
+
+    const dispatch = useDispatch()
+    const settingsState = useSelector(state => state.settings)
     const serverState = useSelector(state => state.server)
-    const settingState = useSelector(state => state.settings)
 
-    function closeSettings() {
-        
-        return null;
-    }
 
-    function applySettings() {
+    function applySetting(setting, value) {
+        console.log("Setting: ", setting, "   ", "Value:  ", value)
         dispatch(
-            updateSettings({
-                settings: settingState,
+            updateSetting({
+                setting: setting,
+                value: value,
                 serverId: serverState.id
             })
         )
-        closeSettings();
     }
 
     function defaultSettings() {
         dispatch(
-            updateSettings({
-                settings: DEFAULT_SETTINGS,
+            resetSettings({
+                settings: INITIAL_STATE,
                 serverId: serverState.id
             })
         )
     }
-*/
 
     return (
-        <LobbySettingsView toggleSettings={showSettings}
-
-        /*categoryList={[]}
-        closeSettings={"closeSettings"}
-        applySettings={"applySettings"}
-        defaultSettings={"defaultSettings"} */
-        />
+        <>
+            {showSettings && (
+                <LobbySettingsEdit 
+                    toggleSettings={setShowSettings} 
+                    currentSettings={settingsState}
+                    renderSettings={renderSettings} 
+                    applySetting={applySetting} 
+                    defaultSettings={defaultSettings}
+                />
+            )}
+            <LobbySettingsShow 
+                    currentSettings={settingsState}
+                    renderSettings={renderSettings} 
+            />
+        </>
     )
-
+    
 
 }
-
-/** CATEGORY https://opentdb.com/api_category.php
- {"id":9,"name":"General Knowledge"},
- {"id":10,"name":"Entertainment: Books"},
- {"id":11,"name":"Entertainment: Film"},
- {"id":12,"name":"Entertainment: Music"},
- {"id":13,"name":"Entertainment: Musicals & Theatres"},
- {"id":14,"name":"Entertainment: Television"},
- {"id":15,"name":"Entertainment: Video Games"},
- {"id":16,"name":"Entertainment: Board Games"},
- {"id":17,"name":"Science & Nature"},
- {"id":18,"name":"Science: Computers"},
- {"id":19,"name":"Science: Mathematics"},
- {"id":20,"name":"Mythology"},
- {"id":21,"name":"Sports"},
- {"id":22,"name":"Geography"},
- {"id":23,"name":"History"},
- {"id":24,"name":"Politics"},
- {"id":25,"name":"Art"},
- {"id":26,"name":"Celebrities"},
- {"id":27,"name":"Animals"},
- {"id":28,"name":"Vehicles"},
- {"id":29,"name":"Entertainment: Comics"},
- {"id":30,"name":"Science: Gadgets"},
- {"id":31,"name":"Entertainment: Japanese Anime & Manga"},
- {"id":32,"name":"Entertainment: Cartoon & Animations"}
- */

@@ -1,3 +1,7 @@
+.desktop {
+    display: none;
+}
+
 .invite {
     border:2px solid #fff;
     border-radius: 4px;
@@ -58,4 +62,66 @@
     border-color: var(--green);
     color: var(--green);
     grid-column: 1 / -1;
+}
+
+@media screen and (min-width: 1000px) {
+    .main {
+        grid-area:actions;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 100%;
+    }
+
+    .desktop {
+        display: block;
+        text-align: left;
+    }
+
+    .desktop h3 {
+        margin-top: 0;
+    }
+
+    .desktop p {
+        font-size:14px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        margin-top:5px;
+    }
+
+    .desktop div {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .desktop div span {font-weight: bold;}
+
+    .desktop h5 {
+        margin-bottom:5px;
+    }
+
+    .copyLink {
+        width: 100%;
+        background: none;
+        border:2px solid #fff;
+        color:#fff;
+        font-weight: bold;
+        border-radius: 4px;
+        padding:10px 0;
+    }
+
+    .mobile .invite {
+        display:none;
+    }
+
+    .buttons {
+        display: block;
+    }
+
+    .buttons button {
+        display: block;
+        width:100%;
+        margin:5px 0;
+    }
 }

@@ -1,20 +1,30 @@
 import GameTimer from "../components/gameTimer"
 
-export default function QuestionView({ question, timer, timerStart, handleAnswer, randomAnswer }) {
+import styles from '../styles/question.module.css'
+import { QuestionIcon, DiceIcon } from "../icons"
+
+
+
+export default function QuestionView({ question, timer, timerStart, handleAnswer, randomAnswer, currentRound, totalRounds }) {
 	return (
-		<div>
+		<div className={styles.main}>
             <GameTimer time={timer} startTime={timerStart} />
-			{question.question}
-			<div className="answersGrid">
+			<div className={styles.question}>
+                <span>Question {currentRound} of {totalRounds}</span>
+				{question.question}
+				<QuestionIcon width={70} color={'var(--pink)'}/>
+			</div>
+			<div className={styles.answersGrid}>
 				{question.answers.map(option => (
-					<div className="answer" key={option.id} onClick={() => handleAnswer(option.id)}>
+					<button key={option.id} onClick={() => handleAnswer(option.id)}>
 						{option.text}
-					</div>
+					</button>
 				))}
 			</div>
-			<div className="randomAnswer" onClick={() => randomAnswer(question.answers)}> {/*  */}
-				Answer Randomly
-			</div>
+			<button className={styles.randomAnswer} onClick={() => randomAnswer(question.answers)}>
+				<DiceIcon color="#fff" />
+				<span>Answer Randomly</span>
+			</button>
 		</div>
 	)
 }

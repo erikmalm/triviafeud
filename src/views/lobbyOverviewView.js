@@ -17,7 +17,7 @@ export default function LobbyOverviewView({
 		return player.role === "host" && participant.role !== "host"
 	}
 	return (
-		<div className="lobbyWrapper">
+		<div className={styles.main}>
 			<div className={styles.top}>
 				<h2>{player.playerName}</h2>
 				<div className={styles.emojiPicker}>{showEmojiPicker && <Picker onEmojiClick={onEmojiSelect} />}</div>

@@ -1,5 +1,6 @@
 import { db } from "../api/fireSource"
 
+
 export const GAME_STATES = Object.freeze({
 	waiting: "WAITING",
 	questionDraft: "QUESTION DRAFT",
@@ -42,14 +43,23 @@ export async function initializeQuestionDrafting(serverId, { playerId }) {
  * @param {boolean} correctAnswer If the selected answer is correct or not
  */
 
-export async function setNewAnswerForPlayer(serverId, playerId, correctAnswer) {
+export async function setNewAnswerForPlayer(serverId, playerId, correctAnswer, addedScore, answeredRandomly) {
 	await db.ref(`rooms/${serverId}/game/currentQuestion/playerAnswers/${playerId}`).set({
         playerId,
         correctAnswer,
-        answeredRandomly: false,
-        addedScore: 10,
+        answeredRandomly,
+        addedScore,
     })
+
+
 }
+
+export async function setNewScoreForPlayer(serverId, playerId, newScore) {
+	await db.ref(`rooms/${serverId}/players/${playerId}/score`).set(newScore)
+}
+	
+
+
 
 // Helper util to clear current question in firebase
 export async function removeCurrentQuestionAndAnswers(serverId) {

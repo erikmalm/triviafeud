@@ -1,5 +1,5 @@
 // CSS
-import { full, big, small } from "../styles/main.module.css"
+import { full, big, small, low, high } from "../styles/main.module.css"
 
 // Redux, store & util
 import store from "../redux/store.js"
@@ -14,6 +14,7 @@ import LobbyPresenter from "./lobbyPresenter"
 import QuickJoinPresenter from "./quickJoinPresenter"
 import QuestionDraftPresenter from "./questionDraftPresenter"
 import RoundResultsPresenter from "./roundResultsPresenter"
+import FinalResultsPresenter from "./finalResultsPresenter"
 
 // Consider importing Presenter instead
 import WaitingView from "../views/waitingView"
@@ -41,6 +42,8 @@ export default function GamePresenter() {
 			return <RoundResultsPresenter />
 		case GAME_STATES.question:
 			return <QuestionPresenter />
+		case GAME_STATES.gameResult:
+			return <FinalResultsPresenter />
 		default:
 			return <QuickJoinPresenter />
 	}
@@ -54,13 +57,19 @@ containers[GAME_STATES.questionWaiting] = small
 containers[GAME_STATES.roundResults] = big
 containers[GAME_STATES.gameResult] = full
 
+const opacities = {}
+opacities[GAME_STATES.question] = high
+
 export function getContainerSize() {
 	const state = store.getState()
-	if (state.server.state === SERVER_STATES.lobby) return full
-	else if (state.server.state === SERVER_STATES.ongoing) {
-		return containers[state.game.gameState] || small
-	}
-	return full
+	if (state.server.state === SERVER_STATES.lobby || state.server.state == null) return full
+
+	return containers[state.game.gameState] || small
+}
+
+export function getOpacity() {
+	const state = store.getState()
+	return opacities[state.game.gameState] || low
 }
 
 /*

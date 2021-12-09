@@ -1,7 +1,15 @@
 import styles from "../styles/questionDraft.module.css"
 
+import { QuestionIcon } from "../icons"
+
 export function QuestionDraftView({ drafter }) {
-	return <div>{drafter} is drafting a question.</div>
+	return (
+        <div className={styles.view} >
+            <QuestionIcon width={200} color="var(--pink)" />
+            <h2>{drafter}</h2>
+            <p>is drafting a question</p>
+        </div>
+    )
 }
 
 export function QuestionDraftViewDrafter({ questions, selectQuestion }) {

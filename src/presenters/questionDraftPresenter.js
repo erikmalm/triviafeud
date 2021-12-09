@@ -1,51 +1,34 @@
 import { QuestionDraftView, QuestionDraftViewDrafter } from "../views/questionDraftView"
 
 import { useDispatch, useSelector } from "react-redux"
-import { getQuestions } from "../api/questionSource"
-import { promiseNoData } from "../api/util"
 
 import { API_STATES } from "../api"
 
-import { useState } from "react"
 import { SpinnerIcon } from "../icons"
-
-import { GAME_STATES } from "../util/gameUtil"
-import { setGameState } from "../redux/reducers/gameSlice"
 
 import { questionIsSelected } from "../redux/reducers/questionDraftSlice"
 
 export default function QuestionDraftPresenter() {
 	const dispatch = useDispatch()
 
-	// Our pretty states
-	const gameState = useSelector(state => state.game)
-	const playerState = useSelector(state => state.player)
-	const serverState = useSelector(state => state.server)
+	const currentDrafter = useSelector(state => state.game.currentDrafter)
+	const playerId = useSelector(state => state.player.playerId)
+	const players = useSelector(state => state.server.players)
 	const questionDraftState = useSelector(state => state.questionDraft)
 
-	function handleSelectQuestion(index) {
-		dispatch(setGameState(GAME_STATES.waiting))
-		dispatch(questionIsSelected({ serverId: serverState.id, question: questionDraftState.questions[index] }))
-	}
-
-	if (playerState.playerId === gameState.currentDrafter) {
+	if (playerId === currentDrafter) {
 		if (questionDraftState.status === API_STATES.SUCCESS) {
 			return (
 				<QuestionDraftViewDrafter
 					questions={questionDraftState.questions.map(question => question.question)}
-					selectQuestion={handleSelectQuestion}
+					selectQuestion={index => dispatch(questionIsSelected(questionDraftState.questions[index]))}
 				/>
 			)
 		}
-		return (
-			<div>
-				<SpinnerIcon width="50" color="#fff" />
-			</div>
-		)
+		return <SpinnerIcon width="50" color="#fff" />
 	}
 
-	// Find the right player name through current drafter ID
-	const { playerName: drafter } = serverState.players.find(({ playerId }) => playerId === gameState.currentDrafter)
+	const drafter = players.find(({ playerId }) => playerId === currentDrafter).playerName
 
 	return <QuestionDraftView drafter={drafter} />
 }

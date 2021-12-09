@@ -12,50 +12,29 @@ export default function LobbyOverviewPresenter({ kick, serverState, playerState,
 
 	const emojiTimeoutRef = useRef(null)
 
-	function handleEmojiClick(emojiObject) {
+	function handleEmojiClick(emoji) {
 		setEmojiPicker(false)
 
-		// This dispatches the emoji to the database
-		dispatch(
-			setEmoji({
-				emojiState: emojiObject,
-				serverId: serverState.id,
-				playerId: playerState.playerId,
-			})
-		)
+		dispatch(setEmoji(emoji))
 
 		// We want to reset timeout if it's not null
 		if (emojiTimeoutRef.current != null) clearTimeout(emojiTimeoutRef.current)
 
 		// After 5 seconds, we reset the emoji
-		emojiTimeoutRef.current = setTimeout(
-			() =>
-				dispatch(
-					setEmoji({
-						emojiState: null,
-						serverId: serverState.id,
-						playerId: playerState.playerId,
-					})
-				),
-			5000
-		)
+		emojiTimeoutRef.current = setTimeout(() => dispatch(setEmoji(null)), 5000)
 	}
 
 
 
 
 
-	return (
-		<>
-			<LobbyOverviewView
-				participants={serverState.players}
-				kickPlayer={kick}
-				player={playerState}
-				onEmojiSelect={(_, emojiObject) => handleEmojiClick(emojiObject.emoji)}
-				toggleEmojiPicker={() => setEmojiPicker(!emojiPicker)}
-				showEmojiPicker={emojiPicker}
-				toggleSettings={showSettings}
-			/>
-		</>
-	)
+	return <LobbyOverviewView
+		participants={serverState.players}
+		kickPlayer={kick}
+		player={playerState}
+		onEmojiSelect={(_, emojiObject) => handleEmojiClick(emojiObject.emoji)}
+		toggleEmojiPicker={() => setEmojiPicker(!emojiPicker)}
+		showEmojiPicker={emojiPicker}
+		toggleSettings={showSettings}
+	/>
 }

@@ -42,34 +42,3 @@ h1 {
 button, input[type=button], input[type=submit] {
     cursor: pointer;
 }
-
-.lobbyParticipants {
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
-	width: 306px;
-	text-align: center;
-}
-
-.answersGrid {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	width: 306px;
-	margin: 0 auto;
-	padding: 25px;
-}
-
-.answer {
-	padding: 10px;
-	border: 1px solid #fe1493;
-	background-color: #130152;
-	color: white;
-	border-radius: 3px;
-}
-
-.answer:hover {
-	cursor: pointer;
-}
-
-.answer:active {
-	background-color: #160164;
-}

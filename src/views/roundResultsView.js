@@ -1,6 +1,6 @@
 import styles from '../styles/roundResults.module.css'
 
-export default function RoundResultsView({ players, timer, answeredRight }) {
+export default function RoundResultsView({ players, timer, answeredRight, showFinalResults }) {
 	return (
 		<div className={styles.main}>
             <div className={styles.top}>
@@ -24,7 +24,7 @@ export default function RoundResultsView({ players, timer, answeredRight }) {
                 )}</div>
             </div>
             <div className={styles.continue}>
-                <h3>Starting next round in</h3>
+                <h3>{showFinalResults ? "Showing final results in" : "Starting next round in" }</h3>
                 <div>{timer}</div>
             </div>
 		</div>

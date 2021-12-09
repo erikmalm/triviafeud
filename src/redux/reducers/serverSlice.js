@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { createRoom, joinRoom, PLAYER_TEMPLATE, removePlayer, updateServerSettings } from "../../util/serverUtil"
+import { createRoom, joinRoom, PLAYER_TEMPLATE, removePlayer } from "../../util/serverUtil"
 import { nanoid } from "nanoid"
 
 // API_URL
@@ -42,9 +42,10 @@ export const joinGame = createAsyncThunk("server/join", async ({ userName, serve
 	}
 })
 
-export const kickPlayer = createAsyncThunk("server/kick", async ({ playerId, serverId }, { rejectWithValue }) => {
+export const kickPlayer = createAsyncThunk("server/kick", async (playerId, { rejectWithValue, getState }) => {
     try {
-        await removePlayer(playerId, serverId)
+		const { server } = getState()
+        await removePlayer(playerId, server.id)
         return true
     } catch(e) {
         console.error(e)
@@ -53,18 +54,9 @@ export const kickPlayer = createAsyncThunk("server/kick", async ({ playerId, ser
 })
 
 
-export const updateSettings = createAsyncThunk("settings/update", async ({ settings, serverId }, {rejectWithValue }) => {
-	try {
-		await updateServerSettings(settings, serverId)
-	} catch(e) {
-		return rejectWithValue(e)
-	}
-})
-
 const INITIAL_STATE = {
     id: null, // Identity of the server/room
     players: null, // Holds "player object"s | See what people that have joined
-    settings: null, // Hold the "settings object" | Settings for the current room
     state: null, // State of the room, "lobby" | "ongoing?"
 }
 
@@ -80,9 +72,6 @@ export const serverSlice = createSlice({
         setState: (state, action) => {
             state.state = action.payload
         },
-		setSettings: (state, action) => {
-			state.settings = action.payload
-		},
         resetServer: () => {
             return {...INITIAL_STATE}
         }
@@ -131,19 +120,6 @@ export const serverSlice = createSlice({
 			.addCase(kickPlayer.rejected, (state, action) => {
 				console.log("Rejected")
 				alert(action.payload)
-			})
-
-
-			
-			/* Update Settings */
-			.addCase(updateSettings.pending, (state, action) => {
-				console.log("Trying to update settings")
-			})
-			.addCase(updateSettings.fulfilled, (state, action) => {
-				console.log("Updated settings")
-			})
-			.addCase(updateSettings.rejected, (state, action) => {
-				console.log("Rejected updating settings")
 			})
 	},
 })

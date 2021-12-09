@@ -6,14 +6,12 @@ import {
 	setNewAnswerForPlayer,
 	removeCurrentQuestionAndAnswers,
 	updateGameState,
-	updateNextRound
+	updateNextRound,
+	GAME_STATES,
+	setNewScoreForPlayer
 } from "../../util/gameUtil"
 
 import { setServerState, SERVER_STATES } from "../../util/serverUtil"
-
-// For some reason I only manage to store this value in gameState -> playerAnswers
-// https://www.pluralsight.com/guides/deeply-nested-objectives-redux
-// To fix later...!
 
 const INITIAL_STATE = {
 	currentRound: null,
@@ -27,24 +25,22 @@ const INITIAL_STATE = {
     gameTimerStart: null
 }
 
-export const startGame = createAsyncThunk("game/start", async (serverId, { rejectWithValue }) => {
+export const startGame = createAsyncThunk("game/start", async (_, { rejectWithValue, getState }) => {
 	try {
-		const gameState = await initializeGame(serverId)
-		await setServerState(serverId, SERVER_STATES.ongoing)
+		const { server } = getState()
+		const gameState = await initializeGame(server.id)
+		await setServerState(server.id, SERVER_STATES.ongoing)
 		return gameState
 	} catch (error) {
 		return rejectWithValue(error)
 	}
 })
 
-export const startQuestionDrafting = createAsyncThunk(
-	"game/questiondraft/start",
-	async ({ serverId, players }, { rejectWithValue }) => {
-		console.log("Trying to start question drafting")
+export const startQuestionDrafting = createAsyncThunk("game/questiondraft/start", async (_, { rejectWithValue, getState }) => {
 		try {
-			const randomPlayer = players[Math.floor(Math.random() * players.length)]
-			await initializeQuestionDrafting(serverId, randomPlayer)
-			return randomPlayer
+			const { server } = getState()
+			const randomPlayer = server.players[Math.floor(Math.random() * server.players.length)]
+			await initializeQuestionDrafting(server.id, randomPlayer)
 		} catch (error) {
 			return rejectWithValue(error)
 		}
@@ -53,18 +49,36 @@ export const startQuestionDrafting = createAsyncThunk(
 
 export const answerIsSelected = createAsyncThunk(
 	"answer/select",
-	async ({ serverId, playerId, correctAnswer }, { rejectWithValue }) => {
+	async ({correctAnswer, answeredRandomly}, { getState, rejectWithValue }) => {
+		
 		try {
-			await setNewAnswerForPlayer(serverId, playerId, correctAnswer)
+			const { server, player, game } = getState()
+
+			const scoreMultiplier = ( new Date(game.gameTimer) - Date.now() ) / game.gameTimerStart
+			const addedScore =  correctAnswer ? Math.round(scoreMultiplier * 20) + 80 : 0
+
+			const newScore = player.score + addedScore
+
+			await setNewAnswerForPlayer(server.id, player.playerId, correctAnswer, addedScore, answeredRandomly)
+			await setNewScoreForPlayer(server.id, player.playerId, newScore)
 		} catch (error) {
 			return rejectWithValue(error)
 		}
 	}
 )
 
-export const clearCurrentQuestion = createAsyncThunk("answer/clear", async ({ serverId }, { rejectWithValue }) => {
+
+// 
+// 
+
+// const addedScore = (scoreMultiplier * 100) + 50
+
+
+
+export const clearCurrentQuestion = createAsyncThunk("answer/clear", async (_, { rejectWithValue, getState }) => {
+	const { server } = getState()
 	try {
-		await removeCurrentQuestionAndAnswers(serverId)
+		await removeCurrentQuestionAndAnswers(server.id)
 	} catch (error) {
 		return rejectWithValue(error)
 	}
@@ -72,34 +86,24 @@ export const clearCurrentQuestion = createAsyncThunk("answer/clear", async ({ se
 
 export const setGlobalGameState = createAsyncThunk(
 	"gameState/set",
-	async ({ serverId, gameState }, { rejectWithValue }) => {
+	async (gameState, { rejectWithValue, getState }) => {
+		const { server } = getState()
 		try {
-			await updateGameState(serverId, gameState)
+			await updateGameState(server.id, gameState)
 		} catch (error) {
 			return rejectWithValue(error)
 		}
 	}
 )
 
-export const setNextRound = createAsyncThunk(
-	"game/nextRound",
-	async ({ serverId, currentRound }, {rejectWithValue}) => {
-		try {
-			await updateNextRound(serverId, currentRound + 1)
-		} catch (error) {
-			return rejectWithValue(error)
-		}
+export const updateCurrentRound = createAsyncThunk("game/nextRound", async (round, { rejectWithValue, getState }) => {
+	const { server } = getState()
+	try {
+		await updateNextRound(server.id, round)
+	} catch (error) {
+		return rejectWithValue(error)
 	}
-)
-
-/*
-
-Defined in serverSlice
-    id: null, // Identity of the server/room
-    players: null, // Holds "player object"s | See what people that have joined
-    settings: null, // Hold the "settings object" | Settings for the current room
-    state: null, // State of the room, "lobby" | "ongoing?"
-*/
+})
 
 export const gameSlice = createSlice({
 	name: "game",
@@ -134,8 +138,8 @@ export const gameSlice = createSlice({
 	},
 	extraReducers: builder => {
 		builder
-			.addCase(startGame.pending, (state, action) => {
-				console.log("Trying to start game 1")
+			.addCase(startGame.pending, state => {
+				state.gameState = GAME_STATES.waiting
 			})
 			.addCase(startGame.fulfilled, (state, { payload }) => {
 				return {
@@ -146,11 +150,17 @@ export const gameSlice = createSlice({
 			.addCase(startGame.rejected, (state, action) => {
 				alert(action.payload)
 			})
-			.addCase(startQuestionDrafting.pending, (state, action) => {
-				console.log("Trying to start questiondrafting 1")
+			.addCase(startQuestionDrafting.pending, state => {
+				state.gameState = GAME_STATES.waiting
 			})
 			.addCase(startQuestionDrafting.rejected, (state, action) => {
 				alert(action.payload)
+			})
+			.addCase(answerIsSelected.pending, (state, action) => {
+				state.gameState = GAME_STATES.waiting
+			})
+			.addCase(answerIsSelected.fulfilled, (state, action) => {
+				state.gameState = GAME_STATES.waitingForPlayers
 			})
 	},
 })

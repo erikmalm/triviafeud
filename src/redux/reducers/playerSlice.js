@@ -4,24 +4,25 @@ import { saveReadyToFireBase, saveEmojiToFireBase } from "../../util/playerUtil"
 // API_URL
 /* https://opentdb.com/api.php?amount=1 */
 
-
-/**
- * Changes a state (setReady) asynchronously
- */
-
-export const setReady = createAsyncThunk("player/setReady", async ({readyState, serverId, playerId}, { rejectWithValue })  => {
+export const setReady = createAsyncThunk("player/setReady", async (readyState, { rejectWithValue, getState })  => {
     try {
-        await saveReadyToFireBase(readyState, serverId, playerId)
+        const { server, player } = getState()
+        await saveReadyToFireBase(readyState, server.id, player.playerId)
         return readyState
     } catch (error) {
         return rejectWithValue(error)
     }
 })
 
-export const setEmoji = createAsyncThunk("player/setEmoji", async (action, { rejectWithValue })  => {
+export const setEmoji = createAsyncThunk("player/setEmoji", async (emoji, { rejectWithValue, getState })  => {
     try {
-        await saveEmojiToFireBase(action)
-        return action
+        const { server, player } = getState()
+        await saveEmojiToFireBase({
+            serverId: server.id, 
+            playerId: player.playerId, 
+            emojiState: emoji
+        })
+        return emoji
     } catch (error) {
         return rejectWithValue(error)
     }
@@ -57,29 +58,20 @@ export const playerSlice = createSlice({
 	},
     extraReducers: builder => {
         builder
-            .addCase(setReady.pending, (state, action) => {
-                // console.log("Trying to set ready")
-            })
             .addCase(setReady.fulfilled, (state, { payload }) => {
 				state.ready = payload
             })
-            .addCase(setReady.rejected, (state, action) => {
-                alert(action.payload)
-            })  
-            .addCase(setEmoji.pending, (state, action) => {
-                // console.log("Trying to set emoji")
+            .addCase(setReady.rejected, (_, { payload }) => {
+                alert(payload)
             })
-            .addCase(setEmoji.fulfilled, (state, { payload }) => {
-                // console.log("fullfilled")
-            })
-            .addCase(setEmoji.rejected, (state, action) => {
-                alert(action.payload)
+            .addCase(setEmoji.rejected, (_, { payload }) => {
+                alert(payload)
             })  
     }
 })
 
 
-// Action creators are generated for each case reducer function
+// creators are generated for each case reducer function
 export const { setPlayer, resetPlayer, setKicked } = playerSlice.actions
 
 export default playerSlice.reducer

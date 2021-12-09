@@ -1,58 +1,66 @@
 import styles from "../styles/settingsView.module.css"
 
-export default function LobbySettingsView({ toggleSettings }) {
+function createSetting (setting, applySetting, currentValue) {
+		const label = (setting.label).replace(/\s/g, '_')
+		switch (setting.type) {
+			case "select":
+				return (
+					<div className={styles.select}>
+						<label htmlFor={label}>{setting.label}</label>
+						<select value={currentValue} id={label} onChange={(e) => applySetting(setting.name, e.target.value)}>
+							{setting.options.map((option) => <option value={option} key={option}>{option}</option>)}
+						</select>
+					</div>
+				)
+
+			case "checkbox":
+				return (
+					<div className={styles.checkbox}>
+						<label htmlFor={label}>{setting.label}</label>
+						<input type="checkbox" id={label} checked={currentValue} onChange={(e) => applySetting(setting.name, !currentValue)} key={setting.name}></input>
+					</div>
+				)
+			
+			case "number":
+				return (
+					<div className={styles.number}>
+						<button disabled={currentValue >= 30}onClick={() => applySetting(setting.name, currentValue + 1)}>+</button>
+						<div>{currentValue}</div>
+						<button disabled={currentValue <= 2} onClick={() => applySetting(setting.name, currentValue - 1)}>-</button>
+					</div>
+				)
+			default:
+				return (
+					<div className={styles.textInput}>
+						<label htmlFor={styles.setting}></label>
+						<input type="text">{setting.label}</input>
+					</div>
+				)
+		}
+}
+
+
+export function LobbySettingsEdit({ toggleSettings, currentSettings, renderSettings, applySetting, defaultSettings }) {
 	return (
 		<div className={styles.wrapper}>
 			<button onClick={toggleSettings}>x</button>
-			<select>
-				<option></option>
-			</select>
-			{/*
-			<div className="top">
-				<p>Game settings</p>
-				<button onClick={() => closeSettings()}>x</button>
+			<div>
+				{Object.entries(renderSettings).map((renderSetting) => createSetting(renderSetting[1], applySetting, currentSettings[renderSetting[0]]))}
 			</div>
-			<div className={styles.mode}>
-				<label htmlFor={styles.model}>Mode</label>
-				<select>
-					<option value="themed">Themed Questions</option>
-					<option value="first">First to Answer</option>
-					<option value="speed">Speedround</option>
-				</select>
+			<div>
+				<button onClick={() => defaultSettings()}>Default Settings</button>
 			</div>
-			<div className={styles.toggle}>
-				<label className={styles.switch}>
-					<input type="checkbox"></input>
-					<span className={`${styles.slider} ${styles.round}`}></span>
-				</label>
-			</div>
-			<div className={styles.difficulty}>
-				<label htmlFor={styles.difficulty}>Difficulty</label>
-				<select>
-					<option value="easy">Easy</option>
-					<option value="medium">Medium</option>
-					<option value="hast">Hard</option>
-				</select>
-			</div>
-			<div className={styles.speed}>
-				<label htmlFor={styles.speed}>Speed</label>
-				<select>
-					<option value="grandma">Grandma</option>
-					<option value="average">Average</option>
-					<option value="fast">Fast</option>
-				</select>
-			</div>
-			<div className={styles.category}>
-				<label htmlFor={styles.category}>Category</label>
-				<select>
-					<option>Mixed</option>
-				</select>
-			</div>
-			<div className={styles.buttons}>
-				<button>Default</button>
-				<button>Apply</button>
-			</div>
-			*/}
+		</div>
+	)
+}
+
+export function LobbySettingsShow({currentSettings, renderSettings}) {
+	return (
+		<div className={styles.main}>
+			<h3>Game settings</h3>
+			{Object.keys(renderSettings).map(key => (
+				<div><span className={styles.name}>{renderSettings[key].label}</span> <span className={styles.value}>{currentSettings[renderSettings[key].name].toString()}</span></div>
+			))}
 		</div>
 	)
 }
