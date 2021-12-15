@@ -1,91 +1,94 @@
 .main {
-    padding:0 5%;
-    height: 100%;
-    --bottom-bar-size:80px;
+	padding: 0 5%;
+	height: 100%;
+	--bottom-bar-size: 80px;
 }
 
 .top {
-    height: calc(100% - var(--bottom-bar-size));
+	height: calc(100% - var(--bottom-bar-size));
 }
 
 .heading {
-    padding-top:16px;
-    margin:0 0 16px;
+	padding-top: 16px;
+	margin: 0 0 16px;
 }
 
 .heading::after {
-    content: '';
-    width: 100%;
-    height: 2px;
-    display: block;
-    border-radius: 2px;
-    margin-top: 5px;
-    background: var(--green);
+	content: "";
+	width: 100%;
+	height: 2px;
+	display: block;
+	border-radius: 2px;
+	margin-top: 5px;
+	background: var(--green);
 }
 
 .playerResult {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .playerResult span {
-    font-size:12px;
+	font-size: 12px;
 }
 
 .playerResult div {
-    font-size:26px;
-    font-weight: bold;
+	font-size: 26px;
+	font-weight: bold;
 }
 
 .playerResult .correct {
-    color:var(--green);
+	color: var(--green);
 }
 
 .playerResult .inCorrect {
-    color:var(--pink);
+	color: var(--pink);
 }
 
 .players {
-    margin:20px 0;
-    max-height: calc(100% - 131px);
-    overflow: auto;
-} 
+	margin: 20px 0;
+	max-height: calc(100% - 131px);
+	overflow: auto;
+}
 
 .player {
-    display: flex;
-    justify-content: space-between;
+	display: flex;
+	justify-content: space-between;
 }
 
 .player div {
-    display: flex;
-    align-items: center;
+	display: flex;
+	align-items: center;
 }
 
 .player p {
-    font-weight: bold;
-    margin:5px 0;
+	font-weight: bold;
+	margin: 5px 0;
+	display: flex;
+	align-items: center;
+	gap: 10px;
 }
 
 .player span {
-    font-size: 12px;
-    margin-left:5px;
+	font-size: 12px;
+	margin-left: 5px;
 }
 
 .continue {
-    margin-top:auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height:var(--bottom-bar-size);
+	margin-top: auto;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	height: var(--bottom-bar-size);
 }
 
 .continue h3 {
-    margin:0;
+	margin: 0;
 }
 
 .continue div {
-    font-size:24px;
-    font-weight: bold;
-    color:var(--green);
+	font-size: 24px;
+	font-weight: bold;
+	color: var(--green);
 }

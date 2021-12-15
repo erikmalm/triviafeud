@@ -2,17 +2,23 @@ import "./styles/App.css"
 import main from "./styles/main.module.css"
 import "react-toastify/dist/ReactToastify.css"
 
+import InfoPresenter from "./presenters/infoPresenter"
+
 import CustomRouter, { history } from "./components/routing"
 
+import { SERVER_STATES } from "./util/serverUtil"
 
 import { ToastContainer } from "react-toastify"
 
-function App() {
+import { useSelector } from "react-redux"
 
+function App() {
+	const serverState = useSelector(state => state.server.state)
 	return (
 		<CustomRouter history={history}>
 			<h1 className={main.heading}>Trivia Feud</h1>
-			<ToastContainer autoClose={2000} />
+			{serverState === SERVER_STATES.ongoing && <InfoPresenter />}
+			<ToastContainer autoClose={4000} />
 		</CustomRouter>
 	)
 }

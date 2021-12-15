@@ -1,6 +1,9 @@
 import Join from "../components/join.js"
 
 import { main } from "../styles/quickJoin.module.css"
+import { randomName } from "../styles/startPage.module.css"
+
+import { DiceIcon } from "../icons/"
 
 /**
  * Used when joining a server via an invite link
@@ -10,11 +13,15 @@ import { main } from "../styles/quickJoin.module.css"
  * @returns
  */
 
-export default function QuickJoinView({ userName, setUserName, onSubmit }) {
+export default function QuickJoinView({ userName, setUserName, onSubmit, generateRandomName }) {
 	return (
 		<div className={main}>
 			<h2>Join server</h2>
 			<Join onSubmit={e => onSubmit(e)} setUserName={setUserName} userName={userName} />
+			<button className={randomName} type="button" onClick={generateRandomName}>
+				Generate random name
+				<DiceIcon fill="#fff" />
+			</button>
 		</div>
 	)
 }

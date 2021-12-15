@@ -10,14 +10,17 @@ import {
 	setCurrentDrafter,
 	setNewQuestion,
 	setPlayerAnswers,
-    setGlobalGameState,
-    startQuestionDrafting,
-    clearCurrentQuestion,
-    setGameTimer,
+	setGlobalGameState,
+	startQuestionDrafting,
+	startLoadingQuestions,
+	clearCurrentQuestion,
+	setGameTimer,
 	updateCurrentRound,
-    answerIsSelected
+	answerIsSelected,
 } from "../reducers/gameSlice"
 import { GAME_STATES } from "../../util/gameUtil"
+
+import { calculateQuestionTimeout } from "../../util/questionUtil"
 
 import { getCandidateQuestions } from "../reducers/questionDraftSlice"
 
@@ -43,46 +46,48 @@ export function removeGameWatchers() {
 
 function gameStateWatcher(snapshot) {
 	const val = snapshot.val()
+
 	store.dispatch(setGameState(val))
-	
+
 	checkForAutonomousGameActions(val)
 }
-
 
 function checkForAutonomousGameActions(newState) {
 	const player = store.getState().player
 
-	switch(newState) {
+	switch (newState) {
 		case GAME_STATES.questionDraft:
-			if(player.playerId === store.getState().game.currentDrafter)
-				store.dispatch(getCandidateQuestions())
-			break;
+			if (player.playerId === store.getState().game.currentDrafter) store.dispatch(getCandidateQuestions())
+			break
 		case GAME_STATES.question:
-			const timeOut = 10000
+			const questionState = store.getState().game.currentQuestion.question
+			const settingsState = store.getState().settings
+			const timeOut = calculateQuestionTimeout(questionState, settingsState)
 			store.dispatch(setGameTimer(new Date(Date.now() + timeOut).toString()))
-			setTimeout(() => handleNoAnswer(), timeOut)
-			break;
+			setTimeout(handleNoAnswer, timeOut)
+			break
 		case GAME_STATES.roundResults:
 			const waitTime = 10000
 			store.dispatch(setGameTimer(new Date(Date.now() + waitTime).toString()))
-	
-			if(player.role === "host")
-				setTimeout(startNextRound, waitTime)
-			break;
-		default: break;
+			setTimeout(() => store.dispatch(setGameTimer(null)), waitTime)
+
+			if (player.role === "host") setTimeout(startNextRound, waitTime)
+			break
+		default:
+			break
 	}
 }
 
 async function handleNoAnswer() {
-
-	// If user has answered, return
-	if ( store.getState().game.gameState !== 'QUESTION') return
+	// Check if timeout is still needed
+	if (store.getState().game.gameState !== GAME_STATES.question) return
 
 	// Send to waiting (normal procedure for handle answer)
 	store.dispatch(setGameState(GAME_STATES.waiting))
+	store.dispatch(setGameTimer(null))
 
 	// dispatch user answer with status on correct server for the current player
-	await store.dispatch(answerIsSelected({correctAnswer: false, answeredRandomly: false}))
+	await store.dispatch(answerIsSelected({ correctAnswer: false, answeredRandomly: false }))
 
 	// Wait for the other players
 	store.dispatch(setGameState(GAME_STATES.waitingForPlayers))
@@ -98,21 +103,25 @@ async function handleNoAnswer() {
 // console.log(settingsState.nrOfRounds)
 
 async function startNextRound() {
-	const gameState = store.getState().game
-	const settingsState = store.getState().settings	
+	// Check if timeout is still needed
+	if (store.getState().game.gameState !== GAME_STATES.roundResults) return
 
-	if (gameState.currentRound >= (settingsState.nrOfRounds)) {
+	const gameState = store.getState().game
+	const settingsState = store.getState().settings
+
+	if (gameState.currentRound >= settingsState.numberOfRounds) {
 		await store.dispatch(setGlobalGameState(GAME_STATES.gameResult))
 		return
 	}
 
-    await store.dispatch(setGlobalGameState(GAME_STATES.waiting))
+	await store.dispatch(setGlobalGameState(GAME_STATES.waiting))
 
 	await store.dispatch(updateCurrentRound(gameState.currentRound + 1))
 
-    await store.dispatch(clearCurrentQuestion())
+	await store.dispatch(clearCurrentQuestion())
 
-    await store.dispatch(startQuestionDrafting())
+	if (settingsState.questionDrafting === "on") await store.dispatch(startQuestionDrafting())
+	else await store.dispatch(startLoadingQuestions())
 }
 
 function addGameStateWatcher() {

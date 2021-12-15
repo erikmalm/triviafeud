@@ -1,44 +1,53 @@
-*, *::before, *::after {
-	box-sizing:border-box;
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
 }
 
 :root {
-    --dark-purple: #120050;
-    --dark-purple-rgb: 18, 0, 80;
-    --pink: #FF1490;
-    --purple: #662FC3;
-    --mint: #00C2BA;
-    --green: #7DE0C0;
-	--gray: #C3C3C3;
-    
-    --bezier:cubic-bezier(0.11, 0.54, 0.33, 1.01);;
+	--dark-purple: #120050;
+	--dark-purple-rgb: 18, 0, 80;
+	--pink: #ff1490;
+	--purple: #662fc3;
+	--mint: #00c2ba;
+	--green: #7de0c0;
+	--green-rgb: 125, 224, 192;
+	--gray: #c3c3c3;
+
+	--bezier: cubic-bezier(0.11, 0.54, 0.33, 1.01);
 }
 
 body {
 	margin: 0px;
 	font-family: "Roboto", sans-serif;
 	text-align: center;
-    background-image: url("../images/background-mobile.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    color:#fff;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
+	background-image: url("../images/background-mobile.png");
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	color: #fff;
+	min-height: 100vh;
+	display: flex;
+	justify-content: center;
 }
 
 @media (orientation: landscape) {
-    body {
-        background-image: url("../images/background.png");
-    }
+	body {
+		background-image: url("../images/background.png");
+	}
 }
 
 h1 {
 	font-family: "Train One", cursive;
-    font-weight: normal;
+	font-weight: normal;
 }
 
-button, input[type=button], input[type=submit] {
-    cursor: pointer;
+button,
+input[type="button"],
+input[type="submit"] {
+	cursor: pointer;
+}
+
+label {
+	display: block;
 }

@@ -1,8 +1,8 @@
 import { nanoid } from "nanoid"
 
 import { db, getValueFromDb } from "../api/fireSource"
-import { resetServerSettings } from "./settingsUtil"
-import { INITIAL_STATE } from "../redux/reducers/settingsSlice"
+
+//     const playersNoAnswer = serverState.players.filter(player => !playerAnswers.some(answer => answer.playerId === player.playerId))
 
 export const SERVER_STATES = Object.freeze({
 	lobby: "lobby",
@@ -20,16 +20,34 @@ export const PLAYER_TEMPLATE = {
 	playerName: null,
 }
 
+export function decodePublicRooms(vals) {
+	const publicRooms = Object.entries(vals)
+		.map(([serverId, { state, settings, players }]) => ({
+			state,
+			settings,
+			serverId,
+		}))
+		.filter(room => room.settings.public === "on" && room.state === SERVER_STATES.lobby)
+
+	return publicRooms
+}
+
+export function decodeHosts(vals) {
+	console.log(vals)
+}
+
 // Creates a new room
-export async function createRoom() {
+export async function createRoom(defaultSettings) {
 	const serverId = nanoid()
+
+	console.log(defaultSettings)
 
 	// Creates a new room using nanoID() generated room id
 	await db.ref(`rooms/${serverId}`).set({
 		players: [],
 		state: SERVER_STATES.lobby, // allows players to join
+		settings: defaultSettings,
 	})
-	await resetServerSettings(INITIAL_STATE, serverId)
 
 	return serverId
 }
@@ -63,7 +81,10 @@ export async function setServerState(serverId, state) {
 	await db.ref(`rooms/${serverId}/state`).set(state)
 }
 
-
+export async function assignHost(playerId, serverId) {
+	await db.ref(`rooms/${serverId}/players/${playerId}/role`).set("host")
+	await db.ref(`rooms/${serverId}/host`).set(playerId)
+}
 
 /**
  *
@@ -85,5 +106,3 @@ async function dismantleServer(serverId) {
 	await db.ref(`rooms/${serverId}`).remove()
 	// Server dismantled
 }
-
-

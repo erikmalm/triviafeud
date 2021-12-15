@@ -1,6 +1,8 @@
-import { form } from "../styles/startPage.module.css"
+import { form, checkbox } from "../styles/startPage.module.css"
 
-export default function Host({ onSubmit, userName, setUserName }) {
+import CheckBox from "./checkBox"
+
+export default function Host({ onSubmit, userName, setUserName, publicRoom, setPublicRoom }) {
 	return (
 		<form className={form} onSubmit={e => onSubmit(e)}>
 			<div>
@@ -14,7 +16,19 @@ export default function Host({ onSubmit, userName, setUserName }) {
 					autoComplete="off"
 				/>
 			</div>
+			<div className={checkbox}>
+				<label htmlFor="public_game">Public game</label>
+				<CheckBox
+					colorOff="#fff"
+					colorOn="var(--green)"
+					id="public_game"
+					checked={publicRoom}
+					onChange={() => setPublicRoom(!publicRoom)}
+				/>
+			</div>
 			<input type={"submit"} value={"Begin"} />
 		</form>
 	)
 }
+
+//

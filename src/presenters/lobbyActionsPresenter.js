@@ -11,7 +11,7 @@ export default function LobbyActionsPresenter({ start, leave, playerState, serve
 	const dispatch = useDispatch()
 
 	function handleSetReady() {
-		if (playerState.ready) removeGameWatchers() 
+		if (playerState.ready) removeGameWatchers()
 		else addGameWatchers()
 
 		dispatch(setReady(!playerState.ready))
@@ -19,9 +19,7 @@ export default function LobbyActionsPresenter({ start, leave, playerState, serve
 
 	function copyLink() {
 		try {
-			navigator.clipboard
-				.writeText(window.location.href)
-				.then(() => notifySuccess("Copied the link"))
+			navigator.clipboard.writeText(window.location.href).then(() => notifySuccess("Copied the link"))
 		} catch (e) {
 			notifyError("Could not copy link")
 		}

@@ -1,73 +1,118 @@
 .wrapper {
-    width: 80%;
-    background-color: silver;
-    opacity: 70%;
-    position: absolute;
-    top:0;
-    right:0;
-    bottom:0;
-    color: black;
-    z-index: 2;
-    padding-top: 70px;
-} 
-
-.mode {
-
+	width: 80%;
+	max-width: 400px;
+	background-color: rgba(var(--green-rgb), 0.8);
+	-webkit-backdrop-filter: saturate(150%) blur(3px);
+	backdrop-filter: saturate(150%) blur(3px);
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	color: black;
+	z-index: 2;
+	padding: 70px 5% 10px;
+	text-align: left;
+	overflow: hidden;
 }
 
-.toggle {
-    
+.backDrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background: rgba(0, 0, 0, 0.4);
 }
 
-.switch {
-
+.closeButton {
+	position: absolute;
+	top: 30px;
+	right: 10px;
+	background: none;
+	border: none;
+	font-weight: bold;
+	color: var(--dark-purple);
+	font-size: 16px;
 }
 
-.slider {
-
+.inputs {
+	display: grid;
+	grid-auto-flow: row;
+	gap: 10px;
 }
 
-.round {
-
+.inputs > div {
+	display: flex;
+	justify-content: space-between;
 }
 
-.difficulty {
-
+.inputs > div:not(.checkbox) {
+	flex-direction: column;
+	gap: 5px;
 }
 
-.speed {
-
+.inputs :is(label, input, select) {
+	font-size: 16px;
 }
 
-.category {
-
+.number > div {
+	display: flex;
+	width: 100px;
+	border: 2px solid var(--dark-purple);
+	border-radius: 4px;
+	justify-content: space-between;
+	align-items: center;
+	background: #fff;
 }
 
-.buttons {
+.number button {
+	background: none;
+	border: none;
+	display: flex;
+}
 
+.inputs select {
+	padding: 5px 10px;
+	width: 100%;
+	border: 2px solid var(--dark-purple);
+	border-radius: 4px;
+}
+
+.defaultSettings {
+	width: 100%;
+	padding: 5px 10px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 20px;
+	font-size: 16px;
+	border: 2px solid var(--dark-purple);
+	border-radius: 4px;
+	background: none;
+	text-align: left;
 }
 
 .main {
-    margin:10px 0;
+	margin: 10px 0;
 }
 
 .main h3 {
-    text-align: left;
+	text-align: left;
 }
 
 .main > div {
-    display: flex;
-    justify-content: space-between;
-    margin:5px 0;
+	display: flex;
+	justify-content: space-between;
+	margin: 5px 0;
 }
 
 @media screen and (min-width: 1000px) {
-    .main {
-        grid-area:settings;
-        margin:0;
-    }
+	.main {
+		grid-area: settings;
+		margin: 0;
+	}
 
-    .main h3 {
-        margin-top:0;
-    }
+	.main h3 {
+		margin-top: 0;
+	}
 }

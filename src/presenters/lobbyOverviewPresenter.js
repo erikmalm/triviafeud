@@ -24,10 +24,6 @@ export default function LobbyOverviewPresenter({ kick, serverState, playerState,
 		emojiTimeoutRef.current = setTimeout(() => dispatch(setEmoji(null)), 5000)
 	}
 
-
-
-
-
 	return <LobbyOverviewView
 		participants={serverState.players}
 		kickPlayer={kick}

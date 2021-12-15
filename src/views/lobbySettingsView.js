@@ -1,65 +1,123 @@
 import styles from "../styles/settingsView.module.css"
+import { capitalizeFirstLetter } from "../util/util"
 
-function createSetting (setting, applySetting, currentValue) {
-		const label = (setting.label).replace(/\s/g, '_')
-		switch (setting.type) {
-			case "select":
-				return (
-					<div className={styles.select}>
-						<label htmlFor={label}>{setting.label}</label>
-						<select value={currentValue} id={label} onChange={(e) => applySetting(setting.name, e.target.value)}>
-							{setting.options.map((option) => <option value={option} key={option}>{option}</option>)}
-						</select>
-					</div>
-				)
+import { CrossIcon, MinusIcon, PlusIcon, UndoIcon } from "../icons"
 
-			case "checkbox":
-				return (
-					<div className={styles.checkbox}>
-						<label htmlFor={label}>{setting.label}</label>
-						<input type="checkbox" id={label} checked={currentValue} onChange={(e) => applySetting(setting.name, !currentValue)} key={setting.name}></input>
-					</div>
-				)
-			
-			case "number":
-				return (
-					<div className={styles.number}>
-						<button disabled={currentValue >= 30}onClick={() => applySetting(setting.name, currentValue + 1)}>+</button>
+function createSetting(setting, applySetting, currentValue) {
+	const label = setting.label.replace(/\s/g, "_")
+	switch (setting.type) {
+		case "select":
+			return (
+				<div className={styles.select}>
+					<label htmlFor={label}>{setting.label}</label>
+					<select value={currentValue} id={label} onChange={e => applySetting(setting.name, e.target.value)}>
+						{setting.options.map(option => (
+							<option value={option} key={option}>
+								{option}
+							</option>
+						))}
+					</select>
+				</div>
+			)
+
+		case "checkbox":
+			return (
+				<div className={styles.checkbox}>
+					<label htmlFor={label}>{setting.label}</label>
+					<input
+						type="checkbox"
+						id={label}
+						checked={currentValue === "on"}
+						onChange={e => applySetting(setting.name, currentValue === "on" ? "off" : "on")}
+					></input>
+				</div>
+			)
+
+		case "text":
+			return (
+				<div className={styles.textInput}>
+					<label htmlFor={label}>{setting.label}</label>
+					<input
+						value={currentValue}
+						type="text"
+						id={label}
+						onChange={e => applySetting(setting.name, e.target.value)}
+					></input>
+				</div>
+			)
+
+		case "number":
+			return (
+				<div className={styles.number}>
+					<label>{setting.label}</label>
+					<div>
+						<button
+							disabled={currentValue <= 2}
+							onClick={() => applySetting(setting.name, currentValue - 1)}
+						>
+							<MinusIcon width="20" />
+						</button>
 						<div>{currentValue}</div>
-						<button disabled={currentValue <= 2} onClick={() => applySetting(setting.name, currentValue - 1)}>-</button>
+						<button
+							disabled={currentValue >= 30}
+							onClick={() => applySetting(setting.name, currentValue + 1)}
+						>
+							<PlusIcon width="20" />
+						</button>
 					</div>
-				)
-			default:
-				return (
-					<div className={styles.textInput}>
-						<label htmlFor={styles.setting}></label>
-						<input type="text">{setting.label}</input>
-					</div>
-				)
-		}
+				</div>
+			)
+		default:
+			return (
+				<div className={styles.textInput}>
+					<label htmlFor={styles.setting}></label>
+					<input type="text">{setting.label}</input>
+				</div>
+			)
+	}
 }
 
-
-export function LobbySettingsEdit({ toggleSettings, currentSettings, renderSettings, applySetting, defaultSettings }) {
+export function LobbySettingsEdit({
+	toggleSettings,
+	currentSettings,
+	settingOptions,
+	applySetting,
+	defaultAllSettings,
+}) {
 	return (
-		<div className={styles.wrapper}>
-			<button onClick={toggleSettings}>x</button>
-			<div>
-				{Object.entries(renderSettings).map((renderSetting) => createSetting(renderSetting[1], applySetting, currentSettings[renderSetting[0]]))}
+		<>
+			<div className={styles.wrapper}>
+				<button onClick={toggleSettings} className={styles.closeButton}>
+					<CrossIcon />
+				</button>
+				<div className={styles.inputs}>
+					{settingOptions.map(settingOption =>
+						createSetting(settingOption, applySetting, currentSettings[settingOption.name])
+					)}
+				</div>
+				<div>
+					<button className={styles.defaultSettings} onClick={() => defaultAllSettings()}>
+						Reset to default Settings
+						<UndoIcon />
+					</button>
+				</div>
 			</div>
-			<div>
-				<button onClick={() => defaultSettings()}>Default Settings</button>
-			</div>
-		</div>
+			<div className={styles.backDrop} onClick={toggleSettings}></div>
+		</>
 	)
 }
 
-export function LobbySettingsShow({currentSettings, renderSettings}) {
+export function LobbySettingsShow({ currentSettings, settingOptions }) {
 	return (
 		<div className={styles.main}>
 			<h3>Game settings</h3>
-			{Object.keys(renderSettings).map(key => (
-				<div><span className={styles.name}>{renderSettings[key].label}</span> <span className={styles.value}>{currentSettings[renderSettings[key].name].toString()}</span></div>
+			{settingOptions.map(settingOption => (
+				<div key={settingOption.name}>
+					<span className={styles.name}>{settingOption.label}</span>{" "}
+					<span className={styles.value}>
+						{capitalizeFirstLetter(currentSettings[settingOption.name].toString())}
+					</span>
+				</div>
 			))}
 		</div>
 	)

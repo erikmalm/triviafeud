@@ -1,40 +1,45 @@
-import main from '../styles/main.module.css'
+import main from "../styles/main.module.css"
 
-// Presenters
 import StartPagePresenter from "../presenters/startPagePresenter"
 import GamePresenter, { getContainerSize, getOpacity } from "../presenters/gamePresenter"
 
-
-import { useEffect, useLayoutEffect, useState, useRef } from "react"
+import { useEffect, useLayoutEffect, useState, useRef, useCallback } from "react"
 
 import { Router, Route, Routes } from "react-router-dom"
 
 import { matchPath } from "react-router"
 
-import { createBrowserHistory } from 'history'
+import { createBrowserHistory } from "history"
 
-import { useSelector } from 'react-redux'
+import { useSelector } from "react-redux"
 
-
-export const history = createBrowserHistory();
-
+export const history = createBrowserHistory()
 
 const allRoutes = [
 	{
 		path: "/room/:id",
 		element: GamePresenter,
 		container: getContainerSize,
-		opacity: getOpacity
+		opacity: getOpacity,
+		preventDeload: true,
 	},
 	{
 		path: "/",
 		element: StartPagePresenter,
 		container: () => main.big,
-		opacity: () => main.low
+		opacity: () => main.low,
+		preventDeload: false,
 	},
 ]
 
-export default function CustomRouter ({ history, children, ...props }) {
+function onUnLoad(e) {
+	e.preventDefault()
+	const msg = "Do not leave the page while a game is running, use the exit button first"
+	e.returnValue = msg
+	return msg
+}
+
+export default function CustomRouter({ history, children, ...props }) {
 	const [currentRoute, setCurrentRoute] = useState(null)
 	const [shouldRender, setShouldRender] = useState(false)
 	const [containerSize, setContainerSize] = useState("")
@@ -45,46 +50,55 @@ export default function CustomRouter ({ history, children, ...props }) {
 
 	const [state, setState] = useState({
 		action: history.action,
-		location: history.location
-	});
+		location: history.location,
+	})
+
+	const evaluateStateChange = useCallback(
+		newRoute => {
+			if (containerSize === newRoute.container() && containerOpacity === newRoute.opacity()) return
+			if (!containerRef.current) return setShouldRender(true)
+
+			window.requestAnimationFrame(() => {
+				setContainerSize(newRoute.container())
+				setContainerOpacity(newRoute.opacity())
+
+				setShouldRender(false)
+				containerRef.current.addEventListener("transitionend", () => setShouldRender(true), { once: true })
+			})
+		},
+		[containerSize, containerOpacity, containerRef]
+	)
 
 	useEffect(() => {
 		const route = allRoutes.find(({ path }) => matchPath(path, history.location.pathname) !== null)
-		setCurrentRoute(route)
-		setContainerSize(route.container())
-		setContainerOpacity(route.opacity())
-		if (!containerRef.current) return setShouldRender(true)
 
-		setShouldRender(false)
-		containerRef.current.addEventListener("transitionend", () => setShouldRender(true), { once: true })
-	}, [history.location])
+		evaluateStateChange(route)
+
+		setCurrentRoute(route)
+		if (route.preventDeload) window.addEventListener("beforeunload", onUnLoad)
+		else window.removeEventListener("beforeunload", onUnLoad)
+	}, [history.location, evaluateStateChange])
 
 	useEffect(() => {
 		if (!currentRoute) return
-		setContainerSize(currentRoute.container())
-		setContainerOpacity(currentRoute.opacity())
-	}, [gameState, currentRoute, setContainerSize])
+		evaluateStateChange(currentRoute)
+	}, [gameState, currentRoute, evaluateStateChange])
 
-	useLayoutEffect(() => history.listen(setState), [history]);
+	useLayoutEffect(() => history.listen(setState), [history])
 
 	return (
-		<Router
-			{...props}
-			location={state.location}
-			navigationType={state.action}
-			navigator={history}
-		>
+		<Router {...props} location={state.location} navigationType={state.action} navigator={history}>
 			{children}
 			{currentRoute && (
 				<div ref={containerRef} className={`${main.container} ${containerSize} ${containerOpacity}`}>
 					{shouldRender && (
 						<Routes>
-							<Route path='/' element={<StartPagePresenter />} />
-							<Route path='/room/:id' element={<GamePresenter />} />
+							<Route path="/" element={<StartPagePresenter />} />
+							<Route path="/room/:id" element={<GamePresenter />} />
 						</Routes>
 					)}
 				</div>
 			)}
 		</Router>
-	);
-};
+	)
+}

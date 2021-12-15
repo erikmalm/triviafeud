@@ -62,6 +62,8 @@ opacities[GAME_STATES.question] = high
 
 export function getContainerSize() {
 	const state = store.getState()
+	if (state.game.gameState === GAME_STATES.questionDraft && state.game.currentDrafter !== state.player.playerId)
+		return small
 	if (state.server.state === SERVER_STATES.lobby || state.server.state == null) return full
 
 	return containers[state.game.gameState] || small

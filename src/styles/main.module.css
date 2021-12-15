@@ -1,6 +1,7 @@
 .heading {
 	position: relative;
 	z-index: 2;
+	margin-bottom: 0;
 }
 
 .container {
@@ -33,15 +34,17 @@
 }
 
 .container.big {
-	top: 100px;
+	top: 110px;
 	width: 90%;
-	height: calc(90vh - 100px);
+	height: calc(90vh - 110px);
 	max-width: 1060px;
 }
 
 .container.small {
 	width: 80%;
-	height: 300px;
+	min-height: 400px;
+	max-height: calc(90vh - 110px);
+	max-width: 400px;
 	top: 50%;
 	transform: translate(-50%, -50%);
 }

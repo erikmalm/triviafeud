@@ -7,34 +7,22 @@ export default function RoundResultsPresenter() {
 	const answers = useSelector(state => state.game.playerAnswers)
 	const gameState = useSelector(state => state.game)
 	const playerId = useSelector(state => state.player.playerId)
-	const nrOfRounds = useSelector(state => state.settings.nrOfRounds)
+	const nrOfRounds = useSelector(state => state.settings.numberOfRounds)
 
 	const [timerState, setTimerState] = useState(null)
 
-	const playersWithAnswers = playersState.map(({ playerName, playerId, score }) => ({
-		playerName,
-		score,
-		...answers.find(answer => answer.playerId === playerId),
-	})).sort((a, b) => b.score - a.score)
+	const playersWithAnswers = playersState
+		.map(({ playerName, playerId, score }) => ({
+			playerName,
+			score,
+			...answers.find(answer => answer.playerId === playerId),
+		}))
+		.sort((a, b) => b.score - a.score)
 
-	const { correctAnswer } = answers.find(answer => answer.playerId === playerId)
+	const correctAnswerId = gameState.currentQuestion.question.correctAnswer
+	const correctAnswerText = gameState.currentQuestion.question.answers.find(x => x.id === correctAnswerId).text
 
-	const toggleFinalResults = gameState.currentRound >= nrOfRounds
-
-
-	/*
-
-	const settingsState = useSelector(state => state.settings)
-
-	console.log(gameState.currentRound)
-
-	if (gameState.currentRound === settingsState)
-
-	const showFinalResults = gameState.currentRound >= nrOfRounds
-	
-	*/
-
-
+	const { correctAnswer, answeredRandomly } = answers.find(answer => answer.playerId === playerId)
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -44,5 +32,14 @@ export default function RoundResultsPresenter() {
 		return () => clearInterval(interval)
 	}, [gameState.gameTimer])
 
-	return <RoundResultsView players={playersWithAnswers} timer={timerState} answeredRight={correctAnswer} showFinalResults={toggleFinalResults}/>
+	return (
+		<RoundResultsView
+			players={playersWithAnswers}
+			timer={timerState}
+			answeredRight={correctAnswer}
+			answeredRandomly={answeredRandomly}
+			showFinalResults={gameState.currentRound >= nrOfRounds}
+			correctAnswerText={correctAnswerText}
+		/>
+	)
 }

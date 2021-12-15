@@ -1,0 +1,71 @@
+.round {
+	margin-top: 5px;
+	font-weight: bold;
+}
+
+.buttons button {
+	position: absolute;
+	top: 30px;
+	width: 40px;
+	height: 40px;
+	display: grid;
+	place-items: center;
+	border: none;
+	border-radius: 50%;
+}
+
+.buttons button:nth-child(1) {
+	left: 10px;
+}
+.buttons button:nth-child(2) {
+	left: 60px;
+}
+
+.leaveButton {
+	top: 30px;
+	background: var(--pink);
+}
+
+.leaveButton svg {
+	margin-left: 3px;
+}
+
+.peopleButton {
+	background: var(--dark-purple);
+}
+
+.peopleBack {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.7);
+	z-index: 3;
+	cursor: pointer;
+}
+
+.people {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	background: var(--dark-purple);
+	z-index: 3;
+	max-width: 300px;
+	width: 90%;
+	padding: 0 10px;
+}
+
+.peopleList > div {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.closePeople {
+	position: absolute;
+	top: 20px;
+	right: 10px;
+	cursor: pointer;
+}

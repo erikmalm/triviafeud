@@ -1,7 +1,10 @@
 import { nanoid } from "nanoid"
 
-// Firebase
+import { countWords } from "./util"
+
 import { db } from "../api/fireSource"
+
+import { SPEED_MULTIPLIERS } from "./settingsUtil"
 
 /* 
 {
@@ -56,7 +59,7 @@ export function formatQuestion(question) {
 	else if (question.type === "boolean")
 		decoded.answers = decoded.answers.sort(answer => (answer.text === "True" ? -1 : 1))
 
-    /* Delete unused object parts from API */
+	/* Delete unused object parts from API */
 	delete decoded.incorrect_answers
 	delete decoded.correct_answer
 
@@ -86,3 +89,14 @@ export async function resetCurrentDrafter(serverId) {
 	await db.ref(`rooms/${serverId}/game/currentDrafter`).set(null)
 }
 
+export const VISUAL_COUNT_DOWN_TIME = 3000
+const AVERAGE_WORDS_PER_SECONDS = 4.166666666
+
+export function calculateQuestionTimeout(question, settings) {
+	const words = countWords([question.question, ...question.answers.map(a => a.text)].join(" "))
+	const timeToRead = (words / AVERAGE_WORDS_PER_SECONDS) * 1000
+	const reactionTime = 1000
+	const decisionTime = 3000
+
+	return VISUAL_COUNT_DOWN_TIME + reactionTime + (timeToRead + decisionTime) * SPEED_MULTIPLIERS[settings.speed]
+}

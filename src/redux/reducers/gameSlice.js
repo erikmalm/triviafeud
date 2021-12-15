@@ -8,8 +8,12 @@ import {
 	updateGameState,
 	updateNextRound,
 	GAME_STATES,
-	setNewScoreForPlayer
+	setNewScoreForPlayer,
 } from "../../util/gameUtil"
+
+import { formatQuestion, saveQuestionToFirebase } from "../../util/questionUtil"
+
+import { getQuestions } from "../../api/questionSource"
 
 import { setServerState, SERVER_STATES } from "../../util/serverUtil"
 
@@ -22,7 +26,7 @@ const INITIAL_STATE = {
 	},
 	playerAnswers: [],
 	gameTimer: null,
-    gameTimerStart: null
+	gameTimerStart: null,
 }
 
 export const startGame = createAsyncThunk("game/start", async (_, { rejectWithValue, getState }) => {
@@ -36,7 +40,9 @@ export const startGame = createAsyncThunk("game/start", async (_, { rejectWithVa
 	}
 })
 
-export const startQuestionDrafting = createAsyncThunk("game/questiondraft/start", async (_, { rejectWithValue, getState }) => {
+export const startQuestionDrafting = createAsyncThunk(
+	"game/questiondraft/start",
+	async (_, { rejectWithValue, getState }) => {
 		try {
 			const { server } = getState()
 			const randomPlayer = server.players[Math.floor(Math.random() * server.players.length)]
@@ -47,15 +53,30 @@ export const startQuestionDrafting = createAsyncThunk("game/questiondraft/start"
 	}
 )
 
+export const startLoadingQuestions = createAsyncThunk(
+	"game/loadQuestions/start",
+	async (_, { rejectWithValue, getState }) => {
+		const { server } = getState()
+		try {
+			const [question] = await getQuestions({})
+
+			await saveQuestionToFirebase(server.id, formatQuestion(question))
+
+			await updateGameState(server.id, GAME_STATES.question)
+		} catch (error) {
+			return rejectWithValue(error)
+		}
+	}
+)
+
 export const answerIsSelected = createAsyncThunk(
 	"answer/select",
-	async ({correctAnswer, answeredRandomly}, { getState, rejectWithValue }) => {
-		
+	async ({ correctAnswer, answeredRandomly }, { getState, rejectWithValue }) => {
 		try {
 			const { server, player, game } = getState()
 
-			const scoreMultiplier = ( new Date(game.gameTimer) - Date.now() ) / game.gameTimerStart
-			const addedScore =  correctAnswer ? Math.round(scoreMultiplier * 20) + 80 : 0
+			const scoreMultiplier = (new Date(game.gameTimer) - Date.now()) / game.gameTimerStart
+			const addedScore = correctAnswer ? Math.round(scoreMultiplier * 20) + 80 : 0
 
 			const newScore = player.score + addedScore
 
@@ -67,13 +88,10 @@ export const answerIsSelected = createAsyncThunk(
 	}
 )
 
-
-// 
-// 
+//
+//
 
 // const addedScore = (scoreMultiplier * 100) + 50
-
-
 
 export const clearCurrentQuestion = createAsyncThunk("answer/clear", async (_, { rejectWithValue, getState }) => {
 	const { server } = getState()
@@ -123,7 +141,7 @@ export const gameSlice = createSlice({
 		},
 		setGameTimer: (state, { payload }) => {
 			state.gameTimer = payload
-            state.gameTimerStart = new Date(payload) - Date.now()
+			state.gameTimerStart = payload == null ? null : new Date(payload) - Date.now()
 		},
 		setNewQuestion: (state, { payload }) => {
 			state.currentQuestion.question = payload
@@ -134,6 +152,9 @@ export const gameSlice = createSlice({
 		resetCurrentQuestion: state => {
 			state.currentQuestion = null
 			state.playerAnswers = []
+		},
+		resetGame: () => {
+			return { ...INITIAL_STATE }
 		},
 	},
 	extraReducers: builder => {
@@ -169,10 +190,11 @@ export const {
 	setCurrentRound,
 	setGameState,
 	setCurrentDrafter,
-    setGameTimer,
+	setGameTimer,
 	setNewQuestion,
 	setPlayerAnswers,
 	resetCurrentQuestion,
+	resetGame,
 } = gameSlice.actions
 
 export default gameSlice.reducer

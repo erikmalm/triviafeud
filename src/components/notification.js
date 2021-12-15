@@ -11,3 +11,4 @@ import { toast } from "react-toastify"
 export const notifySuccess = (message = "Success") => toast.success(message)
 export const notifyWarning = (message = "Warning") => toast.warning(message)
 export const notifyError = (message = "Error") => toast.error(message)
+export const notifyInfo = (message = "Info") => toast.info(message)

@@ -27,6 +27,7 @@ export default function QuickJoinPresenter() {
 			}}
 			userName={userName}
 			setUserName={setUserName}
+			generateRandomName={() => setUserName(gamerNamer.generateName())}
 		/>
 	)
 }
