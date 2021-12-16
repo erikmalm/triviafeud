@@ -49,7 +49,7 @@ export const playerSlice = createSlice({
                 ...payload
             }
         },
-        resetPlayer: state => {
+        resetPlayer: () => {
             return {...INITIAL_STATE}
         },
         setKicked: (state, { payload }) => {

@@ -1,0 +1,134 @@
+.main {
+	max-width: 700px;
+	margin: 0 auto;
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	min-height: 100%;
+}
+
+.overflow {
+	position: relative;
+}
+
+.overflow > div {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow: auto;
+}
+
+.pedestals {
+	display: flex;
+	justify-content: space-evenly;
+	margin-top: 10px;
+}
+
+.pedestal {
+	display: grid;
+	justify-items: center;
+	align-items: end;
+	grid-template-rows: 1fr auto;
+	gap: 10px;
+	flex-grow: 1;
+	flex-basis: 0;
+}
+
+.pedestal .block {
+	width: 100px;
+}
+
+.pedestal.n1 > span {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.pedestal.n1 .block {
+	background: var(--green);
+	min-height: 180px;
+	color: #000;
+}
+
+.pedestal.n2 .block {
+	background: var(--pink);
+	min-height: 140px;
+	color: #fff;
+}
+
+.pedestal.n3 .block {
+	background: var(--purple);
+	min-height: 100px;
+	color: #fff;
+}
+
+.pedestal .block {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 0;
+}
+
+.pedestal .block > span {
+	font-size: 26px;
+}
+
+.pedestal.n1 .block > span {
+	font-size: 30px;
+	width: 50px;
+	height: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 4px solid #000;
+	border-radius: 50%;
+}
+
+.pedestal .block .correct {
+	display: flex;
+	justify-content: center;
+	align-items: flex-end;
+	gap: 3px;
+}
+
+.playersList > div {
+	display: grid;
+	grid-template-columns: 1fr 120px 50px;
+	gap: 5px;
+}
+
+.playersList > div + div + div {
+	border-top: 2px solid rgba(var(--green-rgb), 0.2);
+}
+
+.playersList .heading {
+	font-weight: bold;
+}
+
+.playersList .name {
+	text-align: left;
+}
+
+.playersList .ca,
+.playersList .score {
+	text-align: right;
+}
+
+.leave {
+	display: block;
+	width: 100%;
+	padding: 15px 0;
+	margin-top: 10px;
+
+	font-size: 16px;
+	font-weight: bold;
+
+	background: var(--green);
+	border: none;
+	border-radius: 4px;
+}
+
+.leave:hover {
+	opacity: 0.9;
+}

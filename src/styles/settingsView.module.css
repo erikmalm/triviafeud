@@ -71,7 +71,8 @@
 	display: flex;
 }
 
-.inputs select {
+.inputs select,
+.inputs input[type="text"] {
 	padding: 5px 10px;
 	width: 100%;
 	border: 2px solid var(--dark-purple);

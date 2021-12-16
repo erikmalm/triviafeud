@@ -1,38 +1,71 @@
-import styles from "../styles/roundResults.module.css"
+import styles from "../styles/finalResults.module.css"
+
+import { CheckIcon } from "../icons"
 
 export default function FinalResultsView({ players, exit }) {
 	return (
-		<div className="finalWrapper">
+		<div className={styles.main}>
 			<h2 className="finalHeader">Final results</h2>
-
-			<div className={styles.players}>
-				{players.map((player, index) => (
-					<div key={player.playerName} className={styles.player}>
-						<p>
-							{index + 1}. {player.playerName}
-						</p>
-						<div>
-							<p>{player.score}</p>
-						</div>
-					</div>
-				))}
+			<div className={styles.overflow}>
+				{players.length < 3 ? <ListPlayers players={players} /> : <ResultsMoreThanThree players={players} />}
 			</div>
 
-			<button onClick={() => exit()}>Leave</button>
+			<button className={styles.leave} onClick={() => exit()}>
+				Leave
+			</button>
 		</div>
 	)
 }
 
-/*
+function ListPlayers({ players }) {
+	return (
+		<div className={styles.playersList}>
+			<div>
+				<p></p>
+				<p className={`${styles.heading} ${styles.ca}`}>Correct answers</p>
+				<p className={`${styles.heading} ${styles.score}`}>Score</p>
+			</div>
+			{players.map(player => (
+				<div key={player.playerName} className={styles.player}>
+					<p className={styles.name}>
+						{player.place}. {player.playerName}
+					</p>
+					<p className={styles.ca}>{-1}</p>
+					<p className={styles.score}>{player.score}</p>
+				</div>
+			))}
+		</div>
+	)
+}
 
-<div className={styles.players}>{players.map((player, index) => 
-                    <div key={player.playerName} className={styles.player}>
-                        <p>{index + 1}. {player.playerName}</p>
-                        <div>
-                            <p>{player.score}</p>
-                        </div>
-                    </div>
-                )}</div>
+function ResultsMoreThanThree({ players }) {
+	const [first, second, third, ...rest] = players
+	return (
+		<div>
+			<div className={styles.pedestals}>
+				<Pedestal player={second} />
+				<Pedestal player={first} />
+				<Pedestal player={third} />
+			</div>
+			<ListPlayers players={rest} />
+		</div>
+	)
+}
 
-
-*/
+function Pedestal({ player }) {
+	return (
+		<div className={`${styles.pedestal} ${styles["n" + player.place]}`}>
+			<span>{player.playerName}</span>
+			<div className={styles.block}>
+				<span>{player.place}</span>
+				<div>
+					<span>{player.score}</span>
+					<div className={styles.correct}>
+						<CheckIcon color="currentColor" width="16" />
+						<span>{-1}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	)
+}

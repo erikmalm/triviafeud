@@ -23,12 +23,14 @@ export default function FinalResultsPresenter() {
 		resetAndLeave()
 	}
 
-	const playersWithScore = playersState
-		.map(({ playerName, playerId, score }) => ({
+	let place = 0
+	const playersWithScore = [...playersState]
+		.sort((a, b) => b.score - a.score)
+		.map(({ playerName, score }, index, arr) => ({
 			playerName,
 			score,
+			place: score === (arr[index - 1] == null ? -1 : arr[index - 1].score) ? place : ++place,
 		}))
-		.sort((a, b) => b.score - a.score)
 
 	return <FinalResultsView players={playersWithScore} exit={handleExit} />
 }

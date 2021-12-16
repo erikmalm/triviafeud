@@ -9,6 +9,8 @@ import { history } from "../components/routing"
 import { removeGameWatchers } from "../redux/dbwatchers/gameWatcher"
 import { removeServerWatchers } from "../redux/dbwatchers/serverWatcher"
 
+import BAD_WORDS from "../api/words"
+
 export function capitalizeFirstLetter(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1)
 }
@@ -48,4 +50,14 @@ export function countWords(str) {
 	str = str.replace(/[ ]{2,}/gi, " ")
 	str = str.replace(/\n /, "\n")
 	return str.split(" ").length
+}
+
+const badWordsString = BAD_WORDS.join(" ")
+
+export function containsBadWords(string) {
+	return string
+		.trim()
+		.toLowerCase()
+		.split(/[\s-,_]/)
+		.some(part => part.length > 3 && badWordsString.indexOf(part + " ") > -1)
 }

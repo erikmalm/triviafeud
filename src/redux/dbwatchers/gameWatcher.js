@@ -18,13 +18,15 @@ import {
 	updateCurrentRound,
 	answerIsSelected,
 } from "../reducers/gameSlice"
-import { GAME_STATES } from "../../util/gameUtil"
+import { GAME_STATES, setNewScoreForPlayer, setNewAnswerForPlayer } from "../../util/gameUtil"
 
 import { calculateQuestionTimeout } from "../../util/questionUtil"
 
 import { getCandidateQuestions } from "../reducers/questionDraftSlice"
 
 import { decodeFirebaseArray } from "../../util/util.js"
+
+
 
 export function addGameWatchers() {
 	addPlayersWatcher()
@@ -87,20 +89,12 @@ async function handleNoAnswer() {
 	store.dispatch(setGameTimer(null))
 
 	// dispatch user answer with status on correct server for the current player
-	await store.dispatch(answerIsSelected({ correctAnswer: false, answeredRandomly: false }))
+	await store.dispatch(answerIsSelected({ correctAnswer: false, answeredRandomly: false, answerTime: 99999 }))
 
 	// Wait for the other players
 	store.dispatch(setGameState(GAME_STATES.waitingForPlayers))
 }
 
-// console.log(store)
-// const settingsState = store.getState().settings
-// console.log(settingsState)
-
-// if (game.currentRound >= settingsState.nrOfRounds) store.dispatch(setGlobalGameState(GAME_STATES.gameResult))
-
-// console.log(gameState.currentRound)
-// console.log(settingsState.nrOfRounds)
 
 async function startNextRound() {
 	// Check if timeout is still needed
@@ -117,7 +111,6 @@ async function startNextRound() {
 	await store.dispatch(setGlobalGameState(GAME_STATES.waiting))
 
 	await store.dispatch(updateCurrentRound(gameState.currentRound + 1))
-
 	await store.dispatch(clearCurrentQuestion())
 
 	if (settingsState.questionDrafting === "on") await store.dispatch(startQuestionDrafting())
@@ -183,10 +176,59 @@ function removeQuestionWatcher() {
 
 */
 
-function playerAnswerWatcher(snapshot) {
-	const val = snapshot.val() || []
+async function playerAnswerWatcher(snapshot) {
+	const val = snapshot.val() || {}
 
-	store.dispatch(setPlayerAnswers(decodeFirebaseArray(val)))
+	const answers = decodeFirebaseArray(val)
+	store.dispatch(setPlayerAnswers(answers))
+
+	// If player is currently not answering a question or game-mode is not first to answer, return
+	if (answers.length !== 0 && store.getState().settings.gamemode === "first-to-answer") {
+		handleFirstToAnswer(answers)
+	}
+}
+
+async function handleFirstToAnswer(answers) {
+	const { playerId, role } = store.getState().player
+	const game = store.getState().game
+
+	// Check if there are answers and that answer is correct
+	// Or if all players have answered (incorrectly)
+	if ((game.playerAnswers && game.playerAnswers.some(({ correctAnswer }) => correctAnswer === true))) {
+		if (!answers.some(answer => answer.playerId === playerId)) handleNoAnswer()
+
+		if (role === "host") {
+			await new Promise(resolve => setTimeout(resolve, 500))
+			if (answers.length === store.getState().game.playerAnswers.length) {
+
+				const playerWithCorrectAnswer = answers
+                    .filter(answer => answer.correctAnswer === true)
+                    .sort((a, b) => a.answerTime - b.answerTime)[0]
+
+                if (playerWithCorrectAnswer.addedScore > 0) return // This function has already been used
+
+				setNewAnswerForPlayer(
+					store.getState().server.id,
+					playerWithCorrectAnswer.playerId,
+					true,
+					100,
+					playerWithCorrectAnswer.answeredRandomly,
+					playerWithCorrectAnswer.answerTime
+				)
+
+				setNewScoreForPlayer(
+					store.getState().server.id, 
+					playerWithCorrectAnswer.playerId, 
+					store.getState().server.players.find(player => player.playerId === playerWithCorrectAnswer.playerId).score + 100
+				)				
+				// Calculate score for the player who got right first
+				// Set global gamestate to round results
+				// const playersNoAnswer = serverState.players.filter(player => !playerAnswers.some(answer => answer.playerId === player.playerId))
+			}
+		}
+	} else if(answers.length === store.getState().server.players.length) {
+        //do shit
+    }
 }
 
 function addPlayerAnswersWatcher() {

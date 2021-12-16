@@ -1,0 +1,15 @@
+.rooms {
+	display: grid;
+	grid-auto-flow: row;
+}
+
+.rooms > div {
+	display: flex;
+	justify-content: space-between;
+	padding: 10px 0;
+	cursor: pointer;
+}
+
+.rooms > div + div {
+	border-top: 2px solid rgba(var(--green-rgb), 0.2);
+}

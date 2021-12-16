@@ -25,7 +25,6 @@ export default function GamePresenter() {
 
 	/* lite fulhack */
 	let state
-	// console.log(gameState)
 	if (serverState === SERVER_STATES.lobby) state = serverState
 	else state = gameState
 

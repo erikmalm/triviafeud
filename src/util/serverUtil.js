@@ -22,7 +22,7 @@ export const PLAYER_TEMPLATE = {
 
 export function decodePublicRooms(vals) {
 	const publicRooms = Object.entries(vals)
-		.map(([serverId, { state, settings, players }]) => ({
+		.map(([serverId, { state, settings }]) => ({
 			state,
 			settings,
 			serverId,
@@ -32,15 +32,9 @@ export function decodePublicRooms(vals) {
 	return publicRooms
 }
 
-export function decodeHosts(vals) {
-	console.log(vals)
-}
-
 // Creates a new room
 export async function createRoom(defaultSettings) {
 	const serverId = nanoid()
-
-	console.log(defaultSettings)
 
 	// Creates a new room using nanoID() generated room id
 	await db.ref(`rooms/${serverId}`).set({

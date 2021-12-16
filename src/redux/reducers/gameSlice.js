@@ -71,17 +71,23 @@ export const startLoadingQuestions = createAsyncThunk(
 
 export const answerIsSelected = createAsyncThunk(
 	"answer/select",
-	async ({ correctAnswer, answeredRandomly }, { getState, rejectWithValue }) => {
+	async ({ correctAnswer, answeredRandomly, answerTime }, { getState, rejectWithValue }) => {
 		try {
-			const { server, player, game } = getState()
+			const { server, player, game, settings } = getState()
 
 			const scoreMultiplier = (new Date(game.gameTimer) - Date.now()) / game.gameTimerStart
-			const addedScore = correctAnswer ? Math.round(scoreMultiplier * 20) + 80 : 0
+			const addedScore =
+				settings.gamemode === "first-to-answer" || !correctAnswer ? 0 : Math.round(scoreMultiplier * 20) + 80
 
-			const newScore = player.score + addedScore
-
-			await setNewAnswerForPlayer(server.id, player.playerId, correctAnswer, addedScore, answeredRandomly)
-			await setNewScoreForPlayer(server.id, player.playerId, newScore)
+			await setNewAnswerForPlayer(
+				server.id,
+				player.playerId,
+				correctAnswer,
+				addedScore,
+				answeredRandomly,
+				answerTime
+			)
+			if (addedScore > 0) await setNewScoreForPlayer(server.id, player.playerId, player.score + addedScore)
 		} catch (error) {
 			return rejectWithValue(error)
 		}

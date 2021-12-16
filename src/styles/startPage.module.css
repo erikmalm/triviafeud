@@ -4,12 +4,25 @@
 	height: 100%;
 	padding: 20px 10% 10px;
 	display: grid;
-	grid-template-rows: 1fr 20px;
+	grid-template-rows: 1fr 40px;
 }
 
 .main button {
 	background: none;
 	border: none;
+}
+
+.overflow {
+	position: relative;
+}
+
+.overflow > div {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow: auto;
 }
 
 .tabs {
@@ -95,19 +108,30 @@ button.randomName {
 	margin: 10px auto;
 }
 
-.main .help {
-	display: flex;
-	align-items: center;
-	color: var(--gray);
-	margin: 10px auto;
-}
-
 .main .help svg {
 	margin-right: 5px;
 }
 
 .main > span {
 	text-align: center;
+	color: var(--gray);
+}
+
+.bottom {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 30px;
+	border-top: 2px solid var(--pink);
+}
+
+.bottom span {
+	font-size: 14px;
+}
+
+.bottom .help {
+	display: flex;
+	align-items: center;
 	color: var(--gray);
 }
 
@@ -160,4 +184,37 @@ button.randomName {
 		background: var(--green);
 		border-radius: 2px;
 	}
+}
+
+.tutorial {
+	padding: 20px 10%;
+    text-align: left;
+}
+
+.topBar {
+    display:flex;
+    justify-content: space-between;
+}
+
+.topBar button {
+    background: none;
+    border:none;
+}
+
+.tutorial > button {
+	display: block;
+	width: 100%;
+	padding: 15px 0;
+	margin-top: 50px;
+
+	font-size: 16px;
+	font-weight: bold;
+
+	background: var(--green);
+	border: none;
+	border-radius: 4px;
+}
+
+.tutorial > button:hover {
+	opacity: 0.9;
 }

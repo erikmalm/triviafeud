@@ -27,7 +27,16 @@ export default function QuestionPresenter() {
 	function handleAnswer(answer, answeredRandomly = false) {
 		if (!answer) return
 
-		dispatch(answerIsSelected({ correctAnswer: answer === questionState.correctAnswer, answeredRandomly }))
+		const totalTime = (gameTimerStart - VISUAL_COUNT_DOWN_TIME) / 1000
+		const msLeft = (new Date(gameTimer) - Date.now()) / 1000
+
+		dispatch(
+			answerIsSelected({
+				correctAnswer: answer === questionState.correctAnswer,
+				answeredRandomly,
+				answerTime: totalTime - msLeft,
+			})
+		)
 	}
 
 	function randomAnswer(answers) {

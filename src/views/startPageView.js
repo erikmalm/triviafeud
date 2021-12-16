@@ -16,6 +16,8 @@ export default function StartPageView({
 	setStartOption,
 	publicRoom,
 	setPublicRoom,
+    showTutorial,
+	children,
 }) {
 	const hostForm = (
 		<Host
@@ -37,42 +39,47 @@ export default function StartPageView({
 	)
 	return (
 		<div className={styles.main}>
-			<div>
-				<div className={styles.tabs}>
-					<button
-						className={startOption === START_OPTIONS.host ? styles.active : ""}
-						onClick={() => setStartOption(START_OPTIONS.host)}
-					>
-						Host
-					</button>
-					<button
-						className={startOption === START_OPTIONS.join ? styles.active : ""}
-						onClick={() => setStartOption(START_OPTIONS.join)}
-					>
-						Join
-					</button>
-				</div>
-				{window.innerWidth > 800 ? (
-					<div className={styles.formCols}>
-						{hostForm}
-						{joinForm}
+			<div className={styles.overflow}>
+				<div>
+					<div className={styles.tabs}>
+						<button
+							className={startOption === START_OPTIONS.host ? styles.active : ""}
+							onClick={() => setStartOption(START_OPTIONS.host)}
+						>
+							Host
+						</button>
+						<button
+							className={startOption === START_OPTIONS.join ? styles.active : ""}
+							onClick={() => setStartOption(START_OPTIONS.join)}
+						>
+							Join
+						</button>
 					</div>
-				) : startOption === START_OPTIONS.host ? (
-					hostForm
-				) : (
-					joinForm
-				)}
+					{window.innerWidth > 800 ? (
+						<div className={styles.formCols}>
+							{hostForm}
+							{joinForm}
+						</div>
+					) : startOption === START_OPTIONS.host ? (
+						hostForm
+					) : (
+						joinForm
+					)}
 
-				<button className={styles.randomName} type="button" onClick={() => generateRandomName()}>
-					Generate random name
-					<DiceIcon fill="#fff" />
-				</button>
-				<button className={styles.help}>
+					<button className={styles.randomName} type="button" onClick={() => generateRandomName()}>
+						Generate random name
+						<DiceIcon fill="#fff" />
+					</button>
+					{children}
+				</div>
+			</div>
+			<div className={styles.bottom}>
+				<span>&copy; Trivia Feud {new Date().getFullYear()}</span>
+				<button onClick={() => showTutorial()} className={styles.help}>
 					<HelpIcon fill="var(--gray)" />
 					How it works
 				</button>
 			</div>
-			<span>Tm stuff</span>
 		</div>
 	)
 }
