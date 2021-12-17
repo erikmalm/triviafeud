@@ -14,19 +14,18 @@ export default function WaitingForPlayersPresenter() {
 	const serverState = useSelector(state => state.server)
 	const playerState = useSelector(state => state.player)
 	const playerAnswers = useSelector(state => state.game.playerAnswers)
+	const gameState = useSelector(state => state.game)
 
 	useEffect(() => {
 		if (playerAnswers.length < serverState.players.length) return
 
-		// Let players wait while game state reset
-		dispatch(setGameState(GAME_STATES.waiting))
-
 		// Not waiting for any more players, go to round result presenter
-		if (playerState.role === 'host')
-            dispatch(setGlobalGameState(GAME_STATES.roundResults))
+		if (playerState.role === "host") dispatch(setGlobalGameState(GAME_STATES.roundResults))
 	}, [playerAnswers, dispatch, playerState.role, serverState.players.length])
 
-    const playersNoAnswer = serverState.players.filter(player => !playerAnswers.some(answer => answer.playerId === player.playerId))
+	const playersNoAnswer = serverState.players.filter(
+		player => !playerAnswers.some(answer => answer.playerId === player.playerId)
+	)
 
 	return (
 		<div>

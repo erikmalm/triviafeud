@@ -15,6 +15,7 @@ import { ToggleOff as ToggleOffIcon, ToggleOn as ToggleOnIcon } from "./toggle"
 import LogoutIcon from "./logout"
 import PeopleIcon from "./people"
 import LoginIcon from "./login"
+import DownIcon from "./down"
 
 export {
 	SpinnerIcon,
@@ -34,4 +35,5 @@ export {
 	LogoutIcon,
 	PeopleIcon,
 	LoginIcon,
+	DownIcon,
 }

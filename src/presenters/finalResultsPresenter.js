@@ -1,36 +1,29 @@
 import FinalResultsView from "../views/finalResultsView"
 
-import { useSelector, useDispatch } from "react-redux"
+import { useSelector } from "react-redux"
 
-import { removeServerWatchers } from "../redux/dbwatchers/serverWatcher"
-import { removeGameWatchers } from "../redux/dbwatchers/gameWatcher"
+import { useState, useEffect } from "react"
 
-import { kickPlayer } from "../redux/reducers/serverSlice"
-
-import { resetAndLeave } from "../util/util"
+import { leaveServer } from "../util/util"
 
 export default function FinalResultsPresenter() {
-	const playersState = useSelector(state => state.server.players)
-	const playerState = useSelector(state => state.player)
-	const dispatch = useDispatch()
+	const livePlayersState = useSelector(state => state.server.players)
 
-	async function handleExit() {
-		removeServerWatchers()
-		removeGameWatchers()
+	const [playersState, setPlayersState] = useState([])
 
-		await dispatch(kickPlayer(playerState.playerId))
-
-		resetAndLeave()
-	}
+	useEffect(() => {
+		setPlayersState([...livePlayersState])
+	}, [])
 
 	let place = 0
 	const playersWithScore = [...playersState]
 		.sort((a, b) => b.score - a.score)
-		.map(({ playerName, score }, index, arr) => ({
+		.map(({ playerName, score, correctAnswers }, index, arr) => ({
 			playerName,
 			score,
+			correctAnswers,
 			place: score === (arr[index - 1] == null ? -1 : arr[index - 1].score) ? place : ++place,
 		}))
 
-	return <FinalResultsView players={playersWithScore} exit={handleExit} />
+	return <FinalResultsView players={playersWithScore} exit={() => leaveServer()} />
 }

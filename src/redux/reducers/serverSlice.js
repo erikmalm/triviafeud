@@ -1,6 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { createRoom, joinRoom, PLAYER_TEMPLATE, removePlayer, assignHost } from "../../util/serverUtil"
+import { joinRoom, PLAYER_TEMPLATE, SERVER_STATES, removePlayer, assignHost } from "../../util/serverUtil"
 import { nanoid } from "nanoid"
+
+import { db } from "../../api/fireSource"
+import { history } from "../../components/routing"
+
+import { watchServerState } from "../dbwatchers/serverWatcher"
+
+import store from "../store"
+import { notifyError } from "../../components/notification"
 
 // API_URL
 /* https://opentdb.com/api.php?amount=1 */
@@ -11,22 +19,28 @@ export const hostNewGame = createAsyncThunk(
 	async ({ userName, publicRoom }, { rejectWithValue, getState }) => {
 		const defaultSettings = getState().settings
 		try {
-			const serverId = await createRoom({
-				...defaultSettings,
-				public: publicRoom,
-				roomName: userName + "'s room",
+			const serverId = nanoid()
+
+			await db.ref(`rooms/${serverId}`).set({
+				players: [],
+				state: SERVER_STATES.lobby,
+				settings: {
+					...defaultSettings,
+					public: publicRoom,
+					roomName: userName + "'s room",
+				},
 			})
-			const playerObj = {
+
+			const player = {
 				...PLAYER_TEMPLATE,
 				role: "host",
 				playerId: nanoid(),
 				playerName: userName,
 			}
-			await joinRoom(playerObj, serverId)
-			return {
-				serverId,
-				playerObj,
-			}
+
+			await joinRoom({ player, serverId })
+
+			return { serverId, playerId: player.playerId }
 		} catch (e) {
 			return rejectWithValue(e)
 		}
@@ -34,20 +48,22 @@ export const hostNewGame = createAsyncThunk(
 )
 
 export const joinGame = createAsyncThunk("server/join", async ({ userName, serverId }, { rejectWithValue }) => {
-	const playerObj = {
+	const player = {
 		...PLAYER_TEMPLATE,
 		playerId: nanoid(),
 		playerName: userName,
 	}
+
+	console.log(store.getState())
+
+	// console.log(server.players.length)
+
 	try {
-		await joinRoom(playerObj, serverId)
+		await joinRoom({ player, serverId })
 	} catch (e) {
 		return rejectWithValue(e.message)
 	}
-	return {
-		serverId,
-		playerObj,
-	}
+	return { serverId, playerId: player.playerId }
 })
 
 export const kickPlayer = createAsyncThunk("server/kick", async (playerId, { rejectWithValue, getState }) => {
@@ -75,7 +91,7 @@ export const assignNewGameHost = createAsyncThunk("server/assign/host", async (_
 
 const INITIAL_STATE = {
 	id: null, // Identity of the server/room
-	players: null, // Holds "player object"s | See what people that have joined
+	players: [], // Holds "player object"s | See what people that have joined
 	state: null, // State of the room, "lobby" | "ongoing?"
 	host: null,
 }
@@ -106,25 +122,22 @@ export const serverSlice = createSlice({
 			.addCase(hostNewGame.fulfilled, (state, { payload }) => {
 				const { serverId } = payload
 				state.id = serverId
-				/* addServerWatchers() */
 			})
 			.addCase(hostNewGame.rejected, (state, action) => {
-				alert(action.payload)
+				notifyError(action.payload)
 			})
 
 			/* Join game */
 			.addCase(joinGame.pending, (state, action) => {
 				console.log("Trying to join")
 			})
-			.addCase(joinGame.fulfilled, (state, action) => {
-				console.log(action.payload)
-				const { serverId } = action.payload
+			.addCase(joinGame.fulfilled, (state, { payload }) => {
+				const { serverId } = payload
 				state.id = serverId
-				/* addServerWatchers() */
 			})
 			.addCase(joinGame.rejected, (state, action) => {
 				console.log("Rejected")
-				alert(action.payload)
+				notifyError(action.payload)
 			})
 
 			/* Kick player */
@@ -136,7 +149,7 @@ export const serverSlice = createSlice({
 			})
 			.addCase(kickPlayer.rejected, (state, action) => {
 				console.log("Rejected")
-				alert(action.payload)
+				notifyError(action.payload)
 			})
 
 			.addCase(assignNewGameHost.pending, (state, action) => {
@@ -146,7 +159,7 @@ export const serverSlice = createSlice({
 				console.log("New game host assigned")
 			})
 			.addCase(assignNewGameHost.rejected, (state, action) => {
-				alert(action.payload)
+				notifyError(action.payload)
 			})
 	},
 })

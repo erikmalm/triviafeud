@@ -11,10 +11,11 @@ import { hostNewGame, joinGame } from "../redux/reducers/serverSlice"
 import { setPlayer } from "../redux/reducers/playerSlice"
 import { history } from "../components/routing"
 
-import { addServerWatchers } from "../redux/dbwatchers/serverWatcher"
+import { watchServerState } from "../redux/dbwatchers/serverWatcher"
 import PublicRoomsPresenter from "./publicRoomsPresenter"
 
 import { containsBadWords } from "../util/util"
+import { watchPlayerStates } from "../redux/dbwatchers/playerWatcher"
 
 export default function StartPagePresenter() {
 	const dispatch = useDispatch()
@@ -22,7 +23,7 @@ export default function StartPagePresenter() {
 	const [userName, setUserName] = useState(gamerNamer.generateName())
 	const [serverId, setServerId] = useState("")
 	const [publicRoom, setPublicRoom] = useState(false)
-    const [showTutorial, setShowTutorial] = useState(false)
+	const [showTutorial, setShowTutorial] = useState(false)
 
 	const [startOption, setStartOption] = useState(START_OPTIONS.host)
 
@@ -35,8 +36,8 @@ export default function StartPagePresenter() {
 
 		const { payload, error } = await dispatch(joinGame({ userName, serverId }))
 		if (error) return
-		dispatch(setPlayer(payload.playerObj))
-		addServerWatchers()
+		watchServerState()
+		watchPlayerStates(payload.playerId)
 		history.push(`room/${payload.serverId}`)
 	}
 
@@ -45,31 +46,29 @@ export default function StartPagePresenter() {
 		if (containsBadWords(userName)) return notifyError("Cannot host, your name contains bad words")
 		const { payload, error } = await dispatch(hostNewGame({ userName, publicRoom: publicRoom ? "on" : "off" }))
 		if (error) return
-		dispatch(setPlayer(payload.playerObj))
-		addServerWatchers()
+		watchServerState()
+		watchPlayerStates(payload.playerId)
 		history.push(`room/${payload.serverId}`)
 	}
 
-	return (
-        showTutorial ? (
-            <TutorialView close={() => setShowTutorial(false)} />
-        ) : (
-			<StartPageView
-				generateRandomName={() => setUserName(gamerNamer.generateName())}
-				userName={userName}
-				setUserName={name => setUserName(name)}
-				setServerId={id => setServerId(id)}
-				serverId={serverId}
-				joinServer={handleJoinServer}
-				hostServer={handleHostServer}
-				startOption={startOption}
-				setStartOption={setStartOption}
-				publicRoom={publicRoom}
-				setPublicRoom={setPublicRoom}
-                showTutorial={() => setShowTutorial(true)}
-			>
-				<PublicRoomsPresenter />
-			</StartPageView>
-        )
-    )
+	return showTutorial ? (
+		<TutorialView close={() => setShowTutorial(false)} />
+	) : (
+		<StartPageView
+			generateRandomName={() => setUserName(gamerNamer.generateName())}
+			userName={userName}
+			setUserName={name => setUserName(name)}
+			setServerId={id => setServerId(id)}
+			serverId={serverId}
+			joinServer={handleJoinServer}
+			hostServer={handleHostServer}
+			startOption={startOption}
+			setStartOption={setStartOption}
+			publicRoom={publicRoom}
+			setPublicRoom={setPublicRoom}
+			showTutorial={() => setShowTutorial(true)}
+		>
+			<PublicRoomsPresenter />
+		</StartPageView>
+	)
 }

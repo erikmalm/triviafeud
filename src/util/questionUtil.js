@@ -85,10 +85,6 @@ export async function saveQuestionToFirebase(serverId, question) {
 	await db.ref(`rooms/${serverId}/game/currentQuestion/question`).set(question)
 }
 
-export async function resetCurrentDrafter(serverId) {
-	await db.ref(`rooms/${serverId}/game/currentDrafter`).set(null)
-}
-
 export const VISUAL_COUNT_DOWN_TIME = 3000
 const AVERAGE_WORDS_PER_SECONDS = 4.166666666
 

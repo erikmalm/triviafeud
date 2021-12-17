@@ -35,6 +35,10 @@ export const SPEED_MULTIPLIERS = {
 	supersonic: 0.25,
 }
 
+export const QUESTION_DRAFTING = "question drafting"
+export const RANDOM_QUESTIONS = "random questions"
+export const FIRST_TO_ANSWER = "first to answer"
+
 export const settings = [
 	{
 		name: "roomName",
@@ -52,14 +56,14 @@ export const settings = [
 		name: "gamemode",
 		label: "Gamemode",
 		type: "select",
-		options: ["normal", "first-to-answer", "true/false"],
-		default: "normal",
+		options: [QUESTION_DRAFTING, RANDOM_QUESTIONS, FIRST_TO_ANSWER],
+		default: QUESTION_DRAFTING,
 	},
 	{
-		name: "questionDrafting",
-		label: "Question Drafting",
+		name: "trueFalse",
+		label: "True/False",
 		type: "checkbox",
-		default: "on",
+		default: "off",
 	},
 	{
 		name: "speed",

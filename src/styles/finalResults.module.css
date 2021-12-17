@@ -39,7 +39,23 @@
 	width: 100px;
 }
 
-.pedestal.n1 > span {
+.pedestalName {
+	position: relative;
+	width: 100%;
+}
+
+.pedestalName span {
+	position: absolute;
+	max-width: 100%;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	left: 50%;
+	top: 0;
+	transform: translate(-50%, -50%);
+}
+
+.pedestal.n1 .pedestalName span {
 	font-size: 20px;
 	font-weight: bold;
 }

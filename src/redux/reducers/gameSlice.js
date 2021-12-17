@@ -2,20 +2,23 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 
 import {
 	initializeGame,
-	initializeQuestionDrafting,
 	setNewAnswerForPlayer,
-	removeCurrentQuestionAndAnswers,
 	updateGameState,
-	updateNextRound,
 	GAME_STATES,
 	setNewScoreForPlayer,
+	setNewNumberOfCorrectAnswersForPlayer,
 } from "../../util/gameUtil"
+
+import { db } from "../../api/fireSource"
 
 import { formatQuestion, saveQuestionToFirebase } from "../../util/questionUtil"
 
 import { getQuestions } from "../../api/questionSource"
 
-import { setServerState, SERVER_STATES } from "../../util/serverUtil"
+import { SERVER_STATES } from "../../util/serverUtil"
+
+import { FIRST_TO_ANSWER } from "../../util/settingsUtil"
+import { notifyError } from "../../components/notification"
 
 const INITIAL_STATE = {
 	currentRound: null,
@@ -33,7 +36,7 @@ export const startGame = createAsyncThunk("game/start", async (_, { rejectWithVa
 	try {
 		const { server } = getState()
 		const gameState = await initializeGame(server.id)
-		await setServerState(server.id, SERVER_STATES.ongoing)
+		await db.ref(`rooms/${server.id}/state`).set(SERVER_STATES.ongoing)
 		return gameState
 	} catch (error) {
 		return rejectWithValue(error)
@@ -46,7 +49,10 @@ export const startQuestionDrafting = createAsyncThunk(
 		try {
 			const { server } = getState()
 			const randomPlayer = server.players[Math.floor(Math.random() * server.players.length)]
-			await initializeQuestionDrafting(server.id, randomPlayer)
+
+			await db.ref(`rooms/${server.id}/game/currentDrafter`).set(randomPlayer.playerId)
+
+			updateGameState(server.id, GAME_STATES.questionDraft)
 		} catch (error) {
 			return rejectWithValue(error)
 		}
@@ -77,7 +83,7 @@ export const answerIsSelected = createAsyncThunk(
 
 			const scoreMultiplier = (new Date(game.gameTimer) - Date.now()) / game.gameTimerStart
 			const addedScore =
-				settings.gamemode === "first-to-answer" || !correctAnswer ? 0 : Math.round(scoreMultiplier * 20) + 80
+				settings.gamemode === FIRST_TO_ANSWER || !correctAnswer ? 0 : Math.round(scoreMultiplier * 20) + 80
 
 			await setNewAnswerForPlayer(
 				server.id,
@@ -88,21 +94,20 @@ export const answerIsSelected = createAsyncThunk(
 				answerTime
 			)
 			if (addedScore > 0) await setNewScoreForPlayer(server.id, player.playerId, player.score + addedScore)
+
+			if (settings.gamemode !== FIRST_TO_ANSWER && correctAnswer === true) {
+				await setNewNumberOfCorrectAnswersForPlayer(server.id, player.playerId, player.correctAnswers + 1)
+			}
 		} catch (error) {
 			return rejectWithValue(error)
 		}
 	}
 )
 
-//
-//
-
-// const addedScore = (scoreMultiplier * 100) + 50
-
 export const clearCurrentQuestion = createAsyncThunk("answer/clear", async (_, { rejectWithValue, getState }) => {
-	const { server } = getState()
+	const serverId = getState().server.id
 	try {
-		await removeCurrentQuestionAndAnswers(server.id)
+		await db.ref(`rooms/${serverId}/game/currentQuestion`).remove()
 	} catch (error) {
 		return rejectWithValue(error)
 	}
@@ -121,9 +126,9 @@ export const setGlobalGameState = createAsyncThunk(
 )
 
 export const updateCurrentRound = createAsyncThunk("game/nextRound", async (round, { rejectWithValue, getState }) => {
-	const { server } = getState()
+	const serverId = getState().server.id
 	try {
-		await updateNextRound(server.id, round)
+		await db.ref(`rooms/${serverId}/game/currentRound`).set(round)
 	} catch (error) {
 		return rejectWithValue(error)
 	}
@@ -181,7 +186,7 @@ export const gameSlice = createSlice({
 				state.gameState = GAME_STATES.waiting
 			})
 			.addCase(startQuestionDrafting.rejected, (state, action) => {
-				alert(action.payload)
+				notifyError(action.payload)
 			})
 			.addCase(answerIsSelected.pending, (state, action) => {
 				state.gameState = GAME_STATES.waiting

@@ -7,8 +7,10 @@ import { API_STATES } from "../../api"
 
 import { GAME_STATES, updateGameState } from "../../util/gameUtil"
 
+import { db } from "../../api/fireSource"
+
 // util
-import { formatQuestion, saveQuestionToFirebase, resetCurrentDrafter } from "../../util/questionUtil"
+import { formatQuestion, saveQuestionToFirebase } from "../../util/questionUtil"
 
 export const getCandidateQuestions = createAsyncThunk("questionDraft/get", async (_, { rejectWithValue }) => {
 	try {
@@ -28,7 +30,8 @@ export const questionIsSelected = createAsyncThunk(
 		try {
 			await saveQuestionToFirebase(server.id, question)
 			await updateGameState(server.id, GAME_STATES.question)
-            await resetCurrentDrafter(server.id)
+
+            await db.ref(`rooms/${server.id}/game/currentDrafter`).set(null)
 		} catch (error) {
 			return rejectWithValue(error)
 		}

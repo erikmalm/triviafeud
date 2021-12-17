@@ -14,6 +14,7 @@ import LobbyOverviewPresenter from "./lobbyOverviewPresenter"
 import { notifyError } from "../components/notification"
 
 import { leaveServer } from "../util/util"
+import { QUESTION_DRAFTING } from "../util/settingsUtil"
 
 export default function LobbyPresenter() {
 	const dispatch = useDispatch()
@@ -31,7 +32,7 @@ export default function LobbyPresenter() {
 		// Start game
 		await dispatch(startGame())
 
-		if (settingsState.questionDrafting === "on") await dispatch(startQuestionDrafting())
+		if (settingsState.gamemode === QUESTION_DRAFTING) await dispatch(startQuestionDrafting())
 		else await dispatch(startLoadingQuestions())
 	}
 

@@ -8,6 +8,7 @@ export default function RoundResultsView({
 	answeredRandomly,
 	showFinalResults,
 	correctAnswerText,
+	firstToAnswerMode,
 }) {
 	return (
 		<div className={styles.main}>
@@ -19,6 +20,11 @@ export default function RoundResultsView({
 						<div>
 							<div className={styles.correct}>Correct</div>
 							{answeredRandomly && <span>Which was: {correctAnswerText}</span>}
+						</div>
+					) : firstToAnswerMode ? (
+						<div>
+							<div className={styles.inCorrect}>Too slow</div>
+							<span>Correct answer was: {correctAnswerText}</span>
 						</div>
 					) : (
 						<div>

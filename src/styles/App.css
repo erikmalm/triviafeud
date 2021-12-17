@@ -18,24 +18,18 @@
 	--bezier-alt: cubic-bezier(0.54, 0.11, 1.01, 0.33);
 }
 
+#root {
+	width: 100%;
+}
+
 body {
 	margin: 0px;
 	font-family: "Roboto", sans-serif;
 	text-align: center;
-	background-image: url("../images/background-mobile.png");
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
 	color: #fff;
 	min-height: 100vh;
 	display: flex;
 	justify-content: center;
-}
-
-@media (orientation: landscape) {
-	body {
-		background-image: url("../images/background.png");
-	}
 }
 
 h1 {

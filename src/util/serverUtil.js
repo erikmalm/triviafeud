@@ -18,6 +18,7 @@ export const PLAYER_TEMPLATE = {
 	emoji: null,
 	playerId: null,
 	playerName: null,
+	correctAnswers: 0,
 }
 
 export function decodePublicRooms(vals) {
@@ -32,26 +33,12 @@ export function decodePublicRooms(vals) {
 	return publicRooms
 }
 
-// Creates a new room
-export async function createRoom(defaultSettings) {
-	const serverId = nanoid()
-
-	// Creates a new room using nanoID() generated room id
-	await db.ref(`rooms/${serverId}`).set({
-		players: [],
-		state: SERVER_STATES.lobby, // allows players to join
-		settings: defaultSettings,
-	})
-
-	return serverId
-}
-
 /**
  *
  * @returns
  */
 // allows the user to join a specific room
-export async function joinRoom(player, serverId) {
+export async function joinRoom({ player, serverId }) {
 	// fetch room ref from database
 	const state = await getValueFromDb(`rooms/${serverId}/state`)
 
@@ -61,6 +48,8 @@ export async function joinRoom(player, serverId) {
 	// fetch the current players in the room
 	const players = await getValueFromDb(`rooms/${serverId}/players`)
 
+	if (players && Object.keys(players).length > 12) throw new Error("Game is full")
+
 	// Iterate over object players to check if player name already exists
 	for (const otherPlayer in players)
 		if (players[otherPlayer].playerName === player.playerName)
@@ -69,10 +58,6 @@ export async function joinRoom(player, serverId) {
 	await db.ref(`rooms/${serverId}/players/${player.playerId}`).set(player)
 
 	if (player.role === "host") await db.ref(`rooms/${serverId}/host`).set(player.playerId)
-}
-
-export async function setServerState(serverId, state) {
-	await db.ref(`rooms/${serverId}/state`).set(state)
 }
 
 export async function assignHost(playerId, serverId) {
@@ -98,5 +83,4 @@ export async function removePlayer(playerId, serverId) {
  */
 async function dismantleServer(serverId) {
 	await db.ref(`rooms/${serverId}`).remove()
-	// Server dismantled
 }

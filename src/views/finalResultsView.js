@@ -30,7 +30,7 @@ function ListPlayers({ players }) {
 					<p className={styles.name}>
 						{player.place}. {player.playerName}
 					</p>
-					<p className={styles.ca}>{-1}</p>
+					<p className={styles.ca}>{player.correctAnswers}</p>
 					<p className={styles.score}>{player.score}</p>
 				</div>
 			))}
@@ -55,14 +55,16 @@ function ResultsMoreThanThree({ players }) {
 function Pedestal({ player }) {
 	return (
 		<div className={`${styles.pedestal} ${styles["n" + player.place]}`}>
-			<span>{player.playerName}</span>
+			<div className={styles.pedestalName}>
+				<span>{player.playerName}</span>
+			</div>
 			<div className={styles.block}>
 				<span>{player.place}</span>
 				<div>
 					<span>{player.score}</span>
 					<div className={styles.correct}>
 						<CheckIcon color="currentColor" width="16" />
-						<span>{-1}</span>
+						<span>{player.correctAnswers}</span>
 					</div>
 				</div>
 			</div>

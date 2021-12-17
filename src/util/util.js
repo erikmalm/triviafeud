@@ -7,9 +7,10 @@ import { resetSettings } from "../redux/reducers/settingsSlice"
 import { history } from "../components/routing"
 
 import { removeGameWatchers } from "../redux/dbwatchers/gameWatcher"
-import { removeServerWatchers } from "../redux/dbwatchers/serverWatcher"
+import { ignoreServerStates } from "../redux/dbwatchers/serverWatcher"
 
 import BAD_WORDS from "../api/words"
+import { ignorePlayerStates } from "../redux/dbwatchers/playerWatcher"
 
 export function capitalizeFirstLetter(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1)
@@ -27,8 +28,11 @@ export function decodeFirebaseArray(array) {
 
 export async function leaveServer() {
 	const { server, player } = store.getState()
-	removeServerWatchers()
-	removeGameWatchers()
+	ignoreServerStates()
+	ignorePlayerStates()
+	if (player.ready) {
+		removeGameWatchers()
+	}
 	if (player.role === "host" && server.players.length > 1) {
 		await store.dispatch(assignNewGameHost())
 	}

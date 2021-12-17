@@ -8,7 +8,8 @@ import { joinGame } from "../redux/reducers/serverSlice"
 import { setPlayer } from "../redux/reducers/playerSlice"
 import { useParams } from "react-router-dom"
 
-import { addServerWatchers } from "../redux/dbwatchers/serverWatcher"
+import { watchServerState } from "../redux/dbwatchers/serverWatcher"
+import { watchPlayerStates } from "../redux/dbwatchers/playerWatcher"
 
 export default function QuickJoinPresenter() {
 	const dispatch = useDispatch()
@@ -22,8 +23,8 @@ export default function QuickJoinPresenter() {
 				e.preventDefault()
 				const { payload, error } = await dispatch(joinGame({ userName, serverId: id }))
 				if (error) return
-				dispatch(setPlayer(payload.playerObj))
-				addServerWatchers()
+				watchServerState()
+                watchPlayerStates(payload.playerId)
 			}}
 			userName={userName}
 			setUserName={setUserName}

@@ -1,13 +1,16 @@
 import RoundResultsView from "../views/roundResultsView"
 import { useSelector } from "react-redux"
 import { useEffect, useState } from "react"
+import { FIRST_TO_ANSWER } from "../util/settingsUtil"
 
 export default function RoundResultsPresenter() {
 	const playersState = useSelector(state => state.server.players)
 	const answers = useSelector(state => state.game.playerAnswers)
+	const gamemode = useSelector(state => state.settings.gamemode)
 	const gameState = useSelector(state => state.game)
 	const playerId = useSelector(state => state.player.playerId)
 	const nrOfRounds = useSelector(state => state.settings.numberOfRounds)
+	const playerAnswers = useSelector(state => state.playerAnswers)
 
 	const [timerState, setTimerState] = useState(null)
 
@@ -21,6 +24,8 @@ export default function RoundResultsPresenter() {
 
 	const correctAnswerId = gameState.currentQuestion.question.correctAnswer
 	const correctAnswerText = gameState.currentQuestion.question.answers.find(x => x.id === correctAnswerId).text
+
+	const tooSlow = gameState.playerAnswers.find(player => player.playerId === playerId).answerTime === 99999
 
 	const { correctAnswer, answeredRandomly } = answers.find(answer => answer.playerId === playerId)
 
@@ -40,6 +45,7 @@ export default function RoundResultsPresenter() {
 			answeredRandomly={answeredRandomly}
 			showFinalResults={gameState.currentRound >= nrOfRounds}
 			correctAnswerText={correctAnswerText}
+			firstToAnswerMode={gamemode === FIRST_TO_ANSWER && tooSlow}
 		/>
 	)
 }

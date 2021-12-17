@@ -17,7 +17,7 @@ export default function PublicRoomsView({ publicRooms, handleRoomClick }) {
 						key={e.serverId}
 						value={e.serverId}
 					>
-						{e.settings.roomName}
+						{e.roomName}
 						<LoginIcon width="18" color="var(--green)" />
 					</div>
 				))}
@@ -25,5 +25,3 @@ export default function PublicRoomsView({ publicRooms, handleRoomClick }) {
 		</div>
 	)
 }
-
-// {waitingForPlayers.map(player => <div>{player.playerName}</div>)}

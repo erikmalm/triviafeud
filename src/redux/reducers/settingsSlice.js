@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import { notifyError } from "../../components/notification"
 import { settings, updateServerSetting, resetServerSettings } from "../../util/settingsUtil"
 
 export const INITIAL_STATE = settings.reduce((result, setting) => {
@@ -57,7 +58,7 @@ export const settingsSlice = createSlice({
 				console.log("Resetted settings")
 			})
 			.addCase(revertSettings.rejected, (state, action) => {
-				alert(action.payload)
+				notifyError(action.payload)
 			})
 	},
 })
