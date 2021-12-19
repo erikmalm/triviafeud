@@ -8,7 +8,7 @@ function createSetting(setting, applySetting, currentValue) {
 	switch (setting.type) {
 		case "select":
 			return (
-				<div className={styles.select}>
+				<div className={styles.select} key={setting.label}>
 					<label htmlFor={label}>{setting.label}</label>
 					<select value={currentValue} id={label} onChange={e => applySetting(setting.name, e.target.value)}>
 						{setting.options.map(option => (
@@ -22,7 +22,7 @@ function createSetting(setting, applySetting, currentValue) {
 
 		case "checkbox":
 			return (
-				<div className={styles.checkbox}>
+				<div className={styles.checkbox} key={setting.label}>
 					<label htmlFor={label}>{setting.label}</label>
 					<input
 						type="checkbox"
@@ -35,7 +35,7 @@ function createSetting(setting, applySetting, currentValue) {
 
 		case "text":
 			return (
-				<div className={styles.textInput}>
+				<div className={styles.textInput} key={setting.label}>
 					<label htmlFor={label}>{setting.label}</label>
 					<input
 						value={currentValue}
@@ -48,7 +48,7 @@ function createSetting(setting, applySetting, currentValue) {
 
 		case "number":
 			return (
-				<div className={styles.number}>
+				<div className={styles.number} key={setting.label}>
 					<label>{setting.label}</label>
 					<div>
 						<button
@@ -69,7 +69,7 @@ function createSetting(setting, applySetting, currentValue) {
 			)
 		default:
 			return (
-				<div className={styles.textInput}>
+				<div className={styles.textInput} key={setting.label}>
 					<label htmlFor={styles.setting}></label>
 					<input type="text">{setting.label}</input>
 				</div>
