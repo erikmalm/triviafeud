@@ -82,9 +82,6 @@ export async function handleFirstToAnswer(answers) {
 
 	await new Promise(resolve => setTimeout(resolve, 500))
 
-	console.log(answers.length)
-	console.log(store.getState().game.playerAnswers.length)
-
 	if (answers.length === store.getState().game.playerAnswers.length) {
 		const playerWithCorrectAnswer = answers
 			.filter(answer => answer.correctAnswer === true)
@@ -93,7 +90,6 @@ export async function handleFirstToAnswer(answers) {
 		if (playerWithCorrectAnswer.addedScore > 0) return // This function has already been used
 
 		const scoreMultiplier = (new Date(game.gameTimer) - Date.now()) / game.gameTimerStart
-		console.log(scoreMultiplier)
 		const addedScore = Math.round(scoreMultiplier * 30) + 80
 
 		setNewAnswerForPlayer(

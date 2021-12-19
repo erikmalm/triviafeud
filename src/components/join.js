@@ -1,6 +1,8 @@
 import { form } from "../styles/startPage.module.css"
 
-export default function Join({ onSubmit, userName, setUserName, serverId, setServerId }) {
+import { API_STATES } from "../api"
+
+export default function Join({ onSubmit, userName, setUserName, serverId, setServerId, status }) {
 	return (
 		<form className={form} onSubmit={e => onSubmit(e)}>
 			{serverId == null || (
@@ -21,7 +23,7 @@ export default function Join({ onSubmit, userName, setUserName, serverId, setSer
 				/>
 			</div>
 
-			<input type={"submit"} value={"Join"} />
+			<input type={"submit"} value={"Join"} disabled={status === API_STATES.PENDING} />
 		</form>
 	)
 }

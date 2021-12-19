@@ -10,7 +10,6 @@ export default function RoundResultsPresenter() {
 	const gameState = useSelector(state => state.game)
 	const playerId = useSelector(state => state.player.playerId)
 	const nrOfRounds = useSelector(state => state.settings.numberOfRounds)
-	const playerAnswers = useSelector(state => state.playerAnswers)
 
 	const [timerState, setTimerState] = useState(null)
 

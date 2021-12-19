@@ -10,8 +10,6 @@ export function watch(ref, type, cb) {
 
 	const serverId = store.getState().server.id
 
-	console.log(`${serverId}/${ref}`)
-
 	db.ref(`rooms/${serverId}/${ref}`).on(type, cb)
 	currentWatchers.push({
 		ref,

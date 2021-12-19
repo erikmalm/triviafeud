@@ -1,14 +1,13 @@
 import StartPageView, { START_OPTIONS } from "../views/startPageView"
 import TutorialView from "../views/tutorialView"
 
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
 import { notifyError } from "../components/notification"
 
 import gamerNamer from "gamer-namer"
 import { useState } from "react"
 import { hostNewGame, joinGame } from "../redux/reducers/serverSlice"
-import { setPlayer } from "../redux/reducers/playerSlice"
 import { history } from "../components/routing"
 
 import { watchServerState } from "../redux/dbwatchers/serverWatcher"
@@ -19,6 +18,7 @@ import { watchPlayerStates } from "../redux/dbwatchers/playerWatcher"
 
 export default function StartPagePresenter() {
 	const dispatch = useDispatch()
+    const status = useSelector(state => state.server.status)
 
 	const [userName, setUserName] = useState(gamerNamer.generateName())
 	const [serverId, setServerId] = useState("")
@@ -67,6 +67,7 @@ export default function StartPagePresenter() {
 			publicRoom={publicRoom}
 			setPublicRoom={setPublicRoom}
 			showTutorial={() => setShowTutorial(true)}
+            status={status}
 		>
 			<PublicRoomsPresenter />
 		</StartPageView>

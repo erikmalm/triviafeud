@@ -3,12 +3,10 @@ import { joinRoom, PLAYER_TEMPLATE, SERVER_STATES, removePlayer, assignHost } fr
 import { nanoid } from "nanoid"
 
 import { db } from "../../api/fireSource"
-import { history } from "../../components/routing"
 
-import { watchServerState } from "../dbwatchers/serverWatcher"
-
-import store from "../store"
 import { notifyError } from "../../components/notification"
+
+import { API_STATES } from "../../api"
 
 // API_URL
 /* https://opentdb.com/api.php?amount=1 */
@@ -54,10 +52,6 @@ export const joinGame = createAsyncThunk("server/join", async ({ userName, serve
 		playerName: userName,
 	}
 
-	console.log(store.getState())
-
-	// console.log(server.players.length)
-
 	try {
 		await joinRoom({ player, serverId })
 	} catch (e) {
@@ -94,6 +88,7 @@ const INITIAL_STATE = {
 	players: [], // Holds "player object"s | See what people that have joined
 	state: null, // State of the room, "lobby" | "ongoing?"
 	host: null,
+    status: null,
 }
 
 export const serverSlice = createSlice({
@@ -116,50 +111,40 @@ export const serverSlice = createSlice({
 	extraReducers: builder => {
 		builder
 			/* HostGame */
-			.addCase(hostNewGame.pending, (state, action) => {
-				console.log("Trying to host")
+			.addCase(hostNewGame.pending, state => {
+                state.status = API_STATES.PENDING
 			})
 			.addCase(hostNewGame.fulfilled, (state, { payload }) => {
 				const { serverId } = payload
+                state.status = API_STATES.SUCCESS
 				state.id = serverId
 			})
 			.addCase(hostNewGame.rejected, (state, action) => {
 				notifyError(action.payload)
+                state.status = API_STATES.ERROR
 			})
 
 			/* Join game */
-			.addCase(joinGame.pending, (state, action) => {
-				console.log("Trying to join")
+			.addCase(joinGame.pending, state => {
+                state.status = API_STATES.PENDING
 			})
 			.addCase(joinGame.fulfilled, (state, { payload }) => {
 				const { serverId } = payload
+                state.status = API_STATES.SUCCESS
 				state.id = serverId
 			})
 			.addCase(joinGame.rejected, (state, action) => {
-				console.log("Rejected")
-				notifyError(action.payload)
+                state.status = API_STATES.ERROR
+				notifyError("Could not join game: " + action.payload)
 			})
 
 			/* Kick player */
-			.addCase(kickPlayer.pending, (state, action) => {
-				console.log("Trying to kick player")
-			})
-			.addCase(kickPlayer.fulfilled, (state, action) => {
-				console.log("fulfilled")
-			})
 			.addCase(kickPlayer.rejected, (state, action) => {
-				console.log("Rejected")
-				notifyError(action.payload)
+				notifyError("Could not kick player" + action.payload)
 			})
-
-			.addCase(assignNewGameHost.pending, (state, action) => {
-				console.log("Trying to assign host")
-			})
-			.addCase(assignNewGameHost.fulfilled, (state, action) => {
-				console.log("New game host assigned")
-			})
+            
 			.addCase(assignNewGameHost.rejected, (state, action) => {
-				notifyError(action.payload)
+				notifyError("Could not assign new host: " + action.payload)
 			})
 	},
 })

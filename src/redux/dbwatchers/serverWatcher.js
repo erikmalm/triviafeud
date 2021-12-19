@@ -6,7 +6,7 @@ import { setSetting } from "../reducers/settingsSlice"
 
 import { decodeFirebaseArray, leaveServer } from "../../util/util.js"
 
-import { decodePublicRooms } from "../../util/serverUtil"
+import { SERVER_STATES } from "../../util/serverUtil"
 
 import store from "../store"
 
@@ -22,8 +22,6 @@ import { settings } from "../../util/settingsUtil"
  * Keeps track of values in the redux server state
  */
 export function watchServerState() {
-	const serverId = store.getState().server.id
-	console.log(serverId)
 
 	settings.forEach(setting =>
 		watch("settings/" + setting.name, "value", snapshot => {
@@ -93,7 +91,7 @@ function publicRoomsAddWatcher(snapshot) {
 	const val = snapshot.val()
 	if (val === null) return
 
-	if (val.settings.public !== "on" || val.state !== "lobby") return
+	if (val.settings.public !== "on" || val.state !== SERVER_STATES.lobby) return
 
 	store.dispatch(
 		addRoom({

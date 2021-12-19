@@ -1,5 +1,5 @@
 // Rect, redux and util & reducers
-import { setGameState, setGlobalGameState } from "../redux/reducers/gameSlice"
+import { setGlobalGameState } from "../redux/reducers/gameSlice"
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect } from "react"
 import { GAME_STATES } from "../util/gameUtil"
@@ -14,7 +14,6 @@ export default function WaitingForPlayersPresenter() {
 	const serverState = useSelector(state => state.server)
 	const playerState = useSelector(state => state.player)
 	const playerAnswers = useSelector(state => state.game.playerAnswers)
-	const gameState = useSelector(state => state.game)
 
 	useEffect(() => {
 		if (playerAnswers.length < serverState.players.length) return

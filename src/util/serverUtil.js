@@ -1,5 +1,3 @@
-import { nanoid } from "nanoid"
-
 import { db, getValueFromDb } from "../api/fireSource"
 
 //     const playersNoAnswer = serverState.players.filter(player => !playerAnswers.some(answer => answer.playerId === player.playerId))

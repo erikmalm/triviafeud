@@ -53,7 +53,7 @@ export const playerSlice = createSlice({
 	extraReducers: builder => {
 		builder
 			.addCase(setReady.rejected, (_, { payload }) => {
-				alert(payload)
+				notifyError(payload)
 			})
 			.addCase(setEmoji.rejected, (_, { payload }) => {
 				notifyError(payload)

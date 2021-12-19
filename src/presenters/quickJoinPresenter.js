@@ -1,11 +1,10 @@
 import QuickJoinView from "../views/quickJoinView"
 
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
 import gamerNamer from "gamer-namer"
 import { useState } from "react"
 import { joinGame } from "../redux/reducers/serverSlice"
-import { setPlayer } from "../redux/reducers/playerSlice"
 import { useParams } from "react-router-dom"
 
 import { watchServerState } from "../redux/dbwatchers/serverWatcher"
@@ -13,6 +12,7 @@ import { watchPlayerStates } from "../redux/dbwatchers/playerWatcher"
 
 export default function QuickJoinPresenter() {
 	const dispatch = useDispatch()
+    const status = useSelector(state => state.server.status)
 	const { id } = useParams()
 
 	const [userName, setUserName] = useState(gamerNamer.generateName())
@@ -29,6 +29,7 @@ export default function QuickJoinPresenter() {
 			userName={userName}
 			setUserName={setUserName}
 			generateRandomName={() => setUserName(gamerNamer.generateName())}
+            status={status}
 		/>
 	)
 }

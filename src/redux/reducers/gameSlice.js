@@ -179,8 +179,8 @@ export const gameSlice = createSlice({
 					...payload,
 				}
 			})
-			.addCase(startGame.rejected, (state, action) => {
-				alert(action.payload)
+			.addCase(startGame.rejected, (_, { payload }) => {
+				notifyError("Could not start game: " + payload)
 			})
 			.addCase(startQuestionDrafting.pending, state => {
 				state.gameState = GAME_STATES.waiting

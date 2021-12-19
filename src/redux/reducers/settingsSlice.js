@@ -41,21 +41,8 @@ export const settingsSlice = createSlice({
 	},
 	extraReducers: builder => {
 		builder
-			.addCase(updateSetting.pending, (state, action) => {
-				console.log("Trying to set settings")
-			})
-			.addCase(updateSetting.fulfilled, (state, { payload }) => {
-				console.log("Setting has been set")
-			})
 			.addCase(updateSetting.rejected, (state, action) => {
-				alert(action.payload)
-			})
-
-			.addCase(revertSettings.pending, (state, action) => {
-				console.log("Trying to reset settings")
-			})
-			.addCase(revertSettings.fulfilled, (state, action) => {
-				console.log("Resetted settings")
+				notifyError(action.payload)
 			})
 			.addCase(revertSettings.rejected, (state, action) => {
 				notifyError(action.payload)

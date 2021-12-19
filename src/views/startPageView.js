@@ -18,6 +18,7 @@ export default function StartPageView({
 	setPublicRoom,
     showTutorial,
 	children,
+    status,
 }) {
 	const hostForm = (
 		<Host
@@ -26,6 +27,7 @@ export default function StartPageView({
 			setUserName={name => setUserName(name)}
 			publicRoom={publicRoom}
 			setPublicRoom={setPublicRoom}
+            status={status}
 		/>
 	)
 	const joinForm = (
@@ -35,6 +37,7 @@ export default function StartPageView({
 			setUserName={name => setUserName(name)}
 			serverId={serverId}
 			setServerId={id => setServerId(id)}
+            status={status}
 		/>
 	)
 	return (

@@ -13,11 +13,11 @@ import { DiceIcon } from "../icons/"
  * @returns
  */
 
-export default function QuickJoinView({ userName, setUserName, onSubmit, generateRandomName }) {
+export default function QuickJoinView({ userName, setUserName, onSubmit, generateRandomName, status }) {
 	return (
 		<div className={main}>
 			<h2>Join server</h2>
-			<Join onSubmit={e => onSubmit(e)} setUserName={setUserName} userName={userName} />
+			<Join onSubmit={e => onSubmit(e)} setUserName={setUserName} userName={userName} status={status} />
 			<button className={randomName} type="button" onClick={generateRandomName}>
 				Generate random name
 				<DiceIcon fill="#fff" />

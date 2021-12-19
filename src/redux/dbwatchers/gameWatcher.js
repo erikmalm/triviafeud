@@ -6,21 +6,9 @@ import {
 	setCurrentDrafter,
 	setNewQuestion,
 	setPlayerAnswers,
-	setGlobalGameState,
-	startQuestionDrafting,
-	startLoadingQuestions,
-	clearCurrentQuestion,
-	setGameTimer,
-	updateCurrentRound,
-	answerIsSelected,
 } from "../reducers/gameSlice"
-import { GAME_STATES } from "../../util/gameUtil"
 
-import { handleFirstToAnswer, handleNoAnswer, checkForAutonomousGameActions } from "../../util/autonomousUtil"
-
-import { calculateQuestionTimeout } from "../../util/questionUtil"
-
-import { getCandidateQuestions } from "../reducers/questionDraftSlice"
+import { handleFirstToAnswer, checkForAutonomousGameActions } from "../../util/autonomousUtil"
 
 import { decodeFirebaseArray } from "../../util/util.js"
 

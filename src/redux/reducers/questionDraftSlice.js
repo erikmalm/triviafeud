@@ -5,6 +5,8 @@ import { setGameState } from "./gameSlice"
 import { getQuestions } from "../../api/questionSource"
 import { API_STATES } from "../../api"
 
+import { notifyError } from "../../components/notification"
+
 import { GAME_STATES, updateGameState } from "../../util/gameUtil"
 
 import { db } from "../../api/fireSource"
@@ -55,7 +57,7 @@ export const questionDraftSlice = createSlice({
 				state.status = API_STATES.SUCCESS
 			})
 			.addCase(getCandidateQuestions.rejected, (state, action) => {
-				alert(action.payload)
+				notifyError("Could not get questions: ", action.payload)
 				state.status = API_STATES.ERROR
 			})
             .addCase(questionIsSelected.pending, state => {state.status = null})

@@ -18,7 +18,6 @@ export async function getQuestions({ amount = 1 }) {
 	if (categoryVal === undefined) delete params.category
 	if (difficulty === "mixed") delete params.difficulty
 	if (trueFalse === "off") delete params.type
-	console.log(`${API_BASE_URL}?${new URLSearchParams(params)}`)
 	const res = await fetch(`${API_BASE_URL}?${new URLSearchParams(params)}`)
 	const data = await res.json()
 	return data.results
