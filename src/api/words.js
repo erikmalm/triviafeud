@@ -568,8 +568,6 @@ const BAD_WORDS = [
 	"hamas",
 	"handjob",
 	"hapa",
-	"harder",
-	"hardon",
 	"harem",
 	"headfuck",
 	"headlights",
